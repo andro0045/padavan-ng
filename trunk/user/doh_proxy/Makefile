@@ -1,6 +1,6 @@
 # https://github.com/aarond10
 
-SRC_VER = 0ba0525
+SRC_VER = 0305226
 SRC_NAME = https_dns_proxy-$(SRC_VER)
 SRC_URL = https://github.com/aarond10/https_dns_proxy/archive/refs/heads/master.tar.gz
 
