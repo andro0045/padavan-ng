@@ -989,7 +989,9 @@ int main (int argc, char **argv)
   if (daemon->port != 0 && option_bool(OPT_NO_RESOLV))
     {
       if (daemon->resolv_files && !daemon->resolv_files->is_default)
+#if 0
 	my_syslog(LOG_WARNING, _("warning: ignoring resolv-file flag because no-resolv is set"));
+#endif
       daemon->resolv_files = NULL;
       if (!daemon->servers)
 	{
