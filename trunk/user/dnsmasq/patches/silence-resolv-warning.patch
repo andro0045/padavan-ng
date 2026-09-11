@@ -1,6 +1,6 @@
 --- a/src/dnsmasq.c
 +++ b/src/dnsmasq.c
-@@ -989,7 +989,9 @@ int main (int argc, char **argv)
+@@ -989,7 +989,9 @@
    if (daemon->port != 0 && option_bool(OPT_NO_RESOLV))
      {
        if (daemon->resolv_files && !daemon->resolv_files->is_default)
