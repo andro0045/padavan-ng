@@ -266,6 +266,11 @@ cb()
     echo "-m connbytes --connbytes-dir $1 --connbytes-mode packets --connbytes 1:$2"
 }
 
+check_mark()
+{
+    echo "-m mark $1 --mark $DESYNC_MARK/$DESYNC_MARK"
+}
+
 set_chain_rules()
 {
     # $1 = "6" - sign that it is ipv6
@@ -283,7 +288,7 @@ set_chain_rules()
         done
     fi
 
-    # create iptables rules for ipset mark, mark = ipset name hash
+    # create iptables rules for ipset mark: mark = ipset name hash
     [ -z "$1" ] && for i in $IPSET_FWMARK; do
         if hash=$(get_ipset_name_hash "$i"); then
             ipset -q create $i nethash family inet \
@@ -308,8 +313,6 @@ set_chain_rules()
 
 set_fw_rules()
 {
-    local check_mark="-m mark ! --mark $DESYNC_MARK/$DESYNC_MARK"
-
     echo "
 -$1 PREROUTING -j zapret_mark
 -$1 OUTPUT -j zapret_out
@@ -317,8 +320,9 @@ set_fw_rules()
 -$1 INPUT -p udp $(cb reply 3) --sport 443 -j zapret_pre
 -$1 FORWARD -p tcp $(cb reply 10) -m multiport --sports 80,443 -j zapret_pre
 -$1 FORWARD -p udp $(cb reply 3) --sport 443 -j zapret_pre
--$1 POSTROUTING -p tcp $check_mark $(cb original 20) -j zapret_post
--$1 POSTROUTING -p udp $check_mark $(cb original 5) -j zapret_post
+-$1 POSTROUTING -p tcp $(check_mark "!") $(cb original 20) -j zapret_post
+-$1 POSTROUTING -p udp $(check_mark "!") $(cb original 5) -j zapret_post
+-$1 POSTROUTING $(check_mark) -j CONNMARK --or-mark $DESYNC_MARK
 "
 }
 
