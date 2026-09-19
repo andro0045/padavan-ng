@@ -22,7 +22,7 @@ FILTER_MARK="0x10000000"
 DEFAULT_TCP_PORTS="80,443"
 DEFAULT_UDP_PORTS="443"
 # when port value is *
-DEFAULT_ALL_PORTS="80-65535"
+DEFAULT_ALL_PORTS="80,443,1024-65535"
 
 NFQUEUE_NUM=200
 USER="nobody"
@@ -271,7 +271,7 @@ check_mark()
     echo "-m mark $1 --mark $DESYNC_MARK/$DESYNC_MARK"
 }
 
-set_chain_rules()
+mangle_chain_rules()
 {
     # $1 = "6" - sign that it is ipv6
 
@@ -311,7 +311,18 @@ set_chain_rules()
     done
 }
 
-set_fw_rules()
+filter_fw_rules()
+{
+    local v
+    [ -n "$2" ] && v="v$2"
+
+    echo "
+-$1 INPUT -p icmp$v -m icmp$2 --icmp${v}-type time-exceeded -m connmark --mark $DESYNC_MARK/$DESYNC_MARK -j DROP
+-$1 FORWARD -p icmp$v -m icmp$2 --icmp${v}-type time-exceeded -m connmark --mark $DESYNC_MARK/$DESYNC_MARK -j DROP
+"
+}
+
+mangle_fw_rules()
 {
     echo "
 -$1 PREROUTING -j zapret_mark
@@ -332,8 +343,11 @@ iptables_stop()
 
     for i in "" $([ -d /proc/sys/net/ipv6 ] && echo 6); do
         ip${i}tables-restore -n 2>/dev/null <<EOF
+*filter
+$(filter_fw_rules D $i)
+COMMIT
 *mangle
-$(set_fw_rules D)
+$(mangle_fw_rules D)
 -F zapret_pre
 -F zapret_post
 -F zapret_out
@@ -359,13 +373,16 @@ iptables_start()
     for i in "" $([ -d /proc/sys/net/ipv6 ] && echo 6); do
         ipset_create_exclude $i
         ip${i}tables-restore -n <<EOF
+*filter
+$(filter_fw_rules I $i)
+COMMIT
 *mangle
 :zapret_pre - [0:0]
 :zapret_post - [0:0]
 :zapret_out - [0:0]
 :zapret_mark - [0:0]
-$(set_fw_rules I)
-$(set_chain_rules $i)
+$(mangle_fw_rules I)
+$(mangle_chain_rules $i)
 COMMIT
 EOF
     done
@@ -603,7 +620,9 @@ touch /tmp/filter.list
 
 ISP_IF="$(nvram get zapret_iface | tr -s ' ,' '\n' | sort -u)"
 if [ -z "$ISP_IF" ]; then
-    ISP_IF4="$(nvram get wan0_ifname)"
+    ISP_IF4="$(nvram get wan0_ifname_t)"
+    [ -n "$ISP_IF4" ] || ISP_IF4="$(nvram get wan0_ifname)"
+
     ISP_IF6="$(nvram get wan0_ifname6)"
 
     ISP_IF=$(printf "%s\n" $ISP_IF4 $ISP_IF6 | sort -u)
