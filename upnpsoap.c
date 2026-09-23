@@ -2630,9 +2630,9 @@ ExecuteSoapAction(struct upnphttp * h, const char * action, int n)
 				return;
 			}
 		}
-		syslog(LOG_NOTICE, "SoapMethod: Unknown: %.*s %s", methodlen, p, namespace);
+		syslog(LOG_DEBUG, "SoapMethod: Unknown: %.*s %s", methodlen, p, namespace);
 	} else {
-		syslog(LOG_NOTICE, "cannot parse SoapAction");
+		syslog(LOG_DEBUG, "cannot parse SoapAction");
 	}
 
 	SoapError(h, 401, "Invalid Action");
