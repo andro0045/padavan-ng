@@ -1,4 +1,4 @@
 PADAVAN_REPO=https://github.com/andro0045/padavan-ng.git
 PADAVAN_BRANCH=master
 PADAVAN_COMMIT=HEAD
-PADAVAN_TOOLCHAIN_URL=https://github.com/andro0045/padavan-ng/releases/download/release-2026.09.22_13.19.26/toolchain_uClibc-ng-1.0.59.tar.xz
+PADAVAN_TOOLCHAIN_URL=https://github.com/andro0045/padavan-ng/releases/download/release-2026.09.23_08.01.55/toolchain_uClibc-ng-1.0.59.tar.xz
