@@ -1772,7 +1772,7 @@ PinholeVerification(struct upnphttp * h, const char * int_ip, unsigned short int
 			r = getaddrinfo(int_ip, NULL, &hints, &ai);
 			if (r != 0)
 			{
-				syslog(LOG_WARNING, "%s: Failed to convert hostname '%s' to IP address : %s",
+				syslog(LOG_DEBUG, "%s: Failed to convert hostname '%s' to IP address : %s",
 				       "PinholeVerification", int_ip, gai_strerror(r));
 				SoapError(h, 402, "Invalid Args");
 				return -1;
