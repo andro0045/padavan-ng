@@ -58,19 +58,6 @@
  	for(ife = ifap; ife; ife = ife->ifa_next)
 --- a/minissdp.c
 +++ b/minissdp.c
-@@ -211,10 +211,12 @@
- 	{
- 		syslog(LOG_WARNING, "setsockopt(udp, SO_REUSEADDR): %m");
- 	}
-+/*
- 	if (setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) < 0)
- 	{
- 		syslog(LOG_WARNING, "setsockopt(udp, SO_REUSEPORT): %m");
- 	}
-+*/
- #ifdef IP_RECVIF
- 	/* BSD */
- 	if(!ipv6) {
 @@ -625,7 +627,7 @@
  	       n, addr_str, l, buf);
  	if(n < 0)
