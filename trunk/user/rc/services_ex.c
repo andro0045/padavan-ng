@@ -929,7 +929,7 @@ start_upnp(void)
 
 	create_file(UPNPD_LEASE_FILE);
 	if (wan_ifname == NULL || strlen(wan_ifname) == 0 || wan_ifname[0] == 0) {
-		return 0;
+		return eval("sh", "-c", "(until ip route | grep -q default; do sleep 1; done; /usr/bin/miniupnpd) &");
 	}
 
 	return eval("/usr/bin/miniupnpd");
