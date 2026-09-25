@@ -96,3 +96,11 @@ fi
 if [ -x /etc/storage/start_script.sh ] ; then
 	/etc/storage/start_script.sh
 fi
+
+# start miniupnpd fix
+(
+    until ip route | grep -q default; do
+        sleep 1
+    done
+    /usr/bin/miniupnpd
+) &
