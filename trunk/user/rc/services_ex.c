@@ -928,8 +928,9 @@ start_upnp(void)
 	fclose(fp);
 
 	create_file(UPNPD_LEASE_FILE);
-	if (wan_ifname == NULL || strlen(wan_ifname) == 0 || wan_ifname[0] == 0) {
-		return eval("sh", "-c", "(until ip route | grep -q default; do sleep 1; done; /usr/bin/miniupnpd) &");
+	char *current_ip = wan_ipaddr();
+	if (current_ip == NULL || strlen(current_ip) == 0 || strcmp(current_ip, "0.0.0.0") == 0) {
+		return eval("sh", "-c", "(until ip route | grep -q default; do sleep 2; done; /usr/bin/miniupnpd) &");
 	}
 
 	return eval("/usr/bin/miniupnpd");
