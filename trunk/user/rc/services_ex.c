@@ -939,7 +939,7 @@ start_upnp(void)
 				if (current_ip && strlen(current_ip) > 0 && strcmp(current_ip, "0.0.0.0") != 0)
 					break;
 			}
-			sleep(3);
+			sleep(2);
 			eval("/usr/bin/miniupnpd");
 			exit(0);
 		}
