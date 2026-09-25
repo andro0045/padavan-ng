@@ -931,7 +931,19 @@ start_upnp(void)
 
 	char *current_ip = nvram_safe_get("wan0_ipaddr");
 	if (current_ip == NULL || strlen(current_ip) == 0 || strcmp(current_ip, "0.0.0.0") == 0) {
-		return eval("sh", "-c", "(until ip route | grep -q default; do sleep 2; done; /usr/bin/miniupnpd) &");
+		pid_t pid = fork();
+		if (pid == 0) {
+			while (1) {
+				sleep(2);
+				current_ip = nvram_safe_get("wan0_ipaddr");
+				if (current_ip && strlen(current_ip) > 0 && strcmp(current_ip, "0.0.0.0") != 0)
+					break;
+			}
+			sleep(3);
+			eval("/usr/bin/miniupnpd");
+			exit(0);
+		}
+		return 0;
 	}
 
 	return eval("/usr/bin/miniupnpd");
