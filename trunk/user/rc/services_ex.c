@@ -928,7 +928,7 @@ start_upnp(void)
 	fclose(fp);
 
 	create_file(UPNPD_LEASE_FILE);
-	if (wan_ifname == NULL || strlen(wan_ifname) == 0 || wan_link == 0) {
+	if (wan_ifname == NULL || strlen(wan_ifname) == 0 || wan_ifname[0] == 0) {
 		return 0;
 	}
 
