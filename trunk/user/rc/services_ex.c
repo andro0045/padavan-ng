@@ -817,6 +817,9 @@ start_upnp(void)
 	char lan_class[24];
 	uint8_t lan_mac[16];
 
+	if (is_upnp_run())
+		return 0;
+
 	if (!nvram_get_int("upnp_enable_x") || !nvram_get_int("wan_nat_x") || get_ap_mode())
 		return 0;
 
@@ -980,9 +983,12 @@ update_upnp(void)
 		return;
 	}
 
+	if (doSystem("iptables -t nat -S MINIUPNPD 2>/dev/null | grep -q '^-N'") == 0) {
+		return;
+	}
+
 	stop_upnp();
 	start_upnp();
-	
 }
 
 void
