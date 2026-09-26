@@ -800,6 +800,8 @@ restart_nmbd(void)
 // miniupnpd
 ///////////////////////////////////////////////////////////////////////
 
+static unsigned long upnp_start_time = 0;
+
 int
 is_upnp_run(void)
 {
@@ -932,6 +934,8 @@ start_upnp(void)
 
 	create_file(UPNPD_LEASE_FILE);
 
+	upnp_start_time = uptime();
+
 	char *current_ip = nvram_safe_get("wan0_ipaddr");
 	if (current_ip == NULL || strlen(current_ip) == 0 || strcmp(current_ip, "0.0.0.0") == 0) {
 		pid_t pid = fork();
@@ -943,6 +947,7 @@ start_upnp(void)
 					break;
 			}
 			sleep(2);
+			upnp_start_time = uptime();
 			eval("/usr/bin/miniupnpd");
 			exit(0);
 		}
@@ -957,6 +962,7 @@ stop_upnp(void)
 {
 	char* svcs[] = { "miniupnpd", NULL };
 	kill_services(svcs, 3, 1);
+	upnp_start_time = 0;
 }
 
 void
@@ -974,6 +980,7 @@ void
 update_upnp(void)
 {
 	if (!is_upnp_run()) {
+		start_upnp();
 		return;
 	}
 
@@ -982,12 +989,14 @@ update_upnp(void)
 		return;
 	}
 
-	if (doSystem("iptables -t nat -S MINIUPNPD 2>/dev/null | grep -q '^-N'") == 0) {
+	if (upnp_start_time > 0 && (uptime() - upnp_start_time) < 10) {
 		return;
 	}
 
-	stop_upnp();
-	start_upnp();
+	/* update upnp forwards from lease file */
+	if (check_if_file_exist(UPNPD_LEASE_FILE)) {
+		doSystem("killall %s %s", "-SIGUSR1", "miniupnpd");
+	}
 }
 
 void
