@@ -974,8 +974,6 @@ void
 update_upnp(void)
 {
 	if (!is_upnp_run()) {
-		sleep(3);
-		start_upnp();
 		return;
 	}
 
