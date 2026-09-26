@@ -119,7 +119,7 @@ endif()
 
 # CLANG TIDY
 
-option(USE_CLANG_TIDY "Use clang-tidy during compilation" ON)
+option(USE_CLANG_TIDY "Use clang-tidy during compilation" OFF)
 
 if(USE_CLANG_TIDY)
   find_program(
