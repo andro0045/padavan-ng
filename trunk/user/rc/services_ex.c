@@ -993,9 +993,8 @@ update_upnp(void)
 		return;
 	}
 
-	/* update upnp forwards from lease file */
-	if (check_if_file_exist(UPNPD_LEASE_FILE)) {
-		doSystem("killall %s %s", "-SIGUSR1", "miniupnpd");
+	stop_upnp();
+	start_upnp();
 	}
 }
 
