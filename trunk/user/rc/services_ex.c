@@ -995,7 +995,6 @@ update_upnp(void)
 
 	stop_upnp();
 	start_upnp();
-	}
 }
 
 void
