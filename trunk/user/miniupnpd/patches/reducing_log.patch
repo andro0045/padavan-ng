@@ -476,12 +476,16 @@
   
 --- a/miniupnpd.c
 +++ b/miniupnpd.c
-@@ -1181,8 +1183,11 @@ static void update_disable_port_forwarding(void)
+@@ -1,13 +1,16 @@
+ static void update_disable_port_forwarding(void)
+ {
+ 	char if_addr[INET_ADDRSTRLEN];
+ 	struct in_addr addr;
+ 	int r = getifaddr(ext_if_name, if_addr, INET_ADDRSTRLEN, &addr, NULL);
+ 	if (r < 0) {
  	} else {
  		int reserved = addr_is_reserved(&addr);
 +		if (disable_port_forwarding && reserved && GETFLAG(ALLOWPRIVATEIPV4MASK)) {
 +			reserved = 0;
 +		}
  		if (!disable_port_forwarding && reserved) {
- 			if (GETFLAG(ALLOWPRIVATEIPV4MASK)) {
- 				syslog(LOG_WARNING, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
