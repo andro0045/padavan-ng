@@ -473,3 +473,15 @@
  	bodylen = snprintf(body, sizeof(body), resp, errCode, errDesc);
  	BuildResp2_upnphttp(h, 500, "Internal Server Error", body, bodylen);
  	SendRespAndClose_upnphttp(h);
+  
+--- a/miniupnpd.c
++++ b/miniupnpd.c
+@@ -1181,8 +1183,11 @@ static void update_disable_port_forwarding(void)
+ 	} else {
+ 		int reserved = addr_is_reserved(&addr);
++		if (disable_port_forwarding && reserved && GETFLAG(ALLOWPRIVATEIPV4MASK)) {
++			reserved = 0;
++		}
+ 		if (!disable_port_forwarding && reserved) {
+ 			if (GETFLAG(ALLOWPRIVATEIPV4MASK)) {
+ 				syslog(LOG_WARNING, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
