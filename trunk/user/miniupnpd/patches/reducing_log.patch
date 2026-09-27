@@ -157,18 +157,19 @@
  		if (!GETFLAG(ALLOWFILTEREDSTUNMASK)) {
  			syslog(LOG_WARNING, "Port forwarding is now disabled");
  			syslog(LOG_WARNING, "Set ext_perform_stun=allow-filtered if you still want to use port forwarding in current situation");
-@@ -1181,8 +1183,9 @@
+@@ -1181,8 +1183,10 @@
  		int reserved = addr_is_reserved(&addr);
  		if (!disable_port_forwarding && reserved) {
  			if (GETFLAG(ALLOWPRIVATEIPV4MASK)) {
 -				syslog(LOG_WARNING, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
 +				syslog(LOG_DEBUG, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
++				disable_port_forwarding = 0;
  			} else {
 +#if 0
  				syslog(LOG_WARNING, "Reserved / private IP address %s on ext interface %s: Port forwarding is impossible", if_addr, ext_if_name);
  				syslog(LOG_INFO, "You are probably behind NAT, enable option ext_perform_stun=yes to detect public IP address");
  				syslog(LOG_INFO, "Or use ext_ip= / -o option to declare public IP address");
-@@ -1191,6 +1194,7 @@
+@@ -1191,6 +1195,7 @@
  				syslog(LOG_INFO, "But you may still need to configure stun server or ext_ip to make it work correctly");
  				syslog(LOG_INFO, "Public IP address is required by UPnP/PCP/PMP protocols and clients do not work without it");
  				disable_port_forwarding = 1;
@@ -176,6 +177,11 @@
  			}
  		} else if (disable_port_forwarding && !reserved) {
  			syslog(LOG_INFO, "Public IP address %s on ext interface %s: Port forwarding is enabled", if_addr, ext_if_name);
+ 			disable_port_forwarding = 0;
++		} else if (disable_port_forwarding && reserved && GETFLAG(ALLOWPRIVATEIPV4MASK)) {
++			syslog(LOG_INFO, "Public IP address %s on ext interface %s: Port forwarding is enabled", if_addr, ext_if_name);
++			disable_port_forwarding = 0;
+ 		}
 @@ -1963,7 +1967,7 @@
  		}
  		if (addr_is_reserved(&addr)) {
