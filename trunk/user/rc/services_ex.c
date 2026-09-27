@@ -801,6 +801,7 @@ restart_nmbd(void)
 ///////////////////////////////////////////////////////////////////////
 
 static unsigned long upnp_start_time = 0;
+static int upnp_initialized = 0;
 
 int
 is_upnp_run(void)
@@ -934,7 +935,7 @@ start_upnp(void)
 
 	create_file(UPNPD_LEASE_FILE);
 
-	upnp_start_time = sys_uptime();
+	upnp_start_time = uptime();
 
 	char *current_ip = nvram_safe_get("wan0_ipaddr");
 	if (current_ip == NULL || strlen(current_ip) == 0 || strcmp(current_ip, "0.0.0.0") == 0) {
@@ -947,13 +948,15 @@ start_upnp(void)
 					break;
 			}
 			sleep(2);
-			upnp_start_time = sys_uptime();
+			upnp_start_time = uptime();
+			upnp_initialized = 1;
 			eval("/usr/bin/miniupnpd");
 			exit(0);
 		}
 		return 0;
 	}
 
+	upnp_initialized = 1;
 	return eval("/usr/bin/miniupnpd");
 }
 
@@ -989,7 +992,12 @@ update_upnp(void)
 		return;
 	}
 
-	if (upnp_start_time > 0 && (sys_uptime() - upnp_start_time) < 15) {
+	if (upnp_initialized) {
+		upnp_initialized = 0;
+		return;
+	}
+
+	if (upnp_start_time > 0 && (uptime() - upnp_start_time) < 15) {
 		return;
 	}
 
