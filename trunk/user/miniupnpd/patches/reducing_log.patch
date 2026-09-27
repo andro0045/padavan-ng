@@ -474,17 +474,3 @@
  	BuildResp2_upnphttp(h, 500, "Internal Server Error", body, bodylen);
  	SendRespAndClose_upnphttp(h);
   
---- a/miniupnpd.c
-+++ b/miniupnpd.c
-@@ @@
- 		default:
- 			syslog(LOG_ERR, "Error getting IPv4 address for ext interface %s. Network is down", ext_if_name);
- 		}
--		disable_port_forwarding = 1;
-+		if (GETFLAG(ALLOWPRIVATEIPV4MASK)) {
-+			disable_port_forwarding = 0;
-+		} else {
-+			disable_port_forwarding = 1;
-+		}
- 	} else {
- 		int reserved = addr_is_reserved(&addr);
