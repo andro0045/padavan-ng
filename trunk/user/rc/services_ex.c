@@ -817,9 +817,6 @@ start_upnp(void)
 	char lan_class[24];
 	uint8_t lan_mac[16];
 
-	if (is_upnp_run())
-		return 0;
-
 	if (!nvram_get_int("upnp_enable_x") || !nvram_get_int("wan_nat_x") || get_ap_mode())
 		return 0;
 
@@ -931,26 +928,6 @@ start_upnp(void)
 	fclose(fp);
 
 	create_file(UPNPD_LEASE_FILE);
-
-	char *current_ip = nvram_safe_get("wan0_ipaddr");
-	if (current_ip == NULL || strlen(current_ip) == 0 || strcmp(current_ip, "0.0.0.0") == 0) {
-		pid_t pid = fork();
-		if (pid == 0) {
-			while (1) {
-				sleep(2);
-				current_ip = nvram_safe_get("wan0_ipaddr");
-				if (current_ip && strlen(current_ip) > 0 && strcmp(current_ip, "0.0.0.0") != 0)
-					break;
-			}
-			sleep(2);
-			if (!is_upnp_run()) {
-				eval("/usr/bin/miniupnpd");
-			}
-			exit(0);
-		}
-		return 0;
-	}
-
 	return eval("/usr/bin/miniupnpd");
 }
 
@@ -985,6 +962,7 @@ update_upnp(void)
 		return;
 	}
 
+	/* update upnp forwards from lease file */
 	if (check_if_file_exist(UPNPD_LEASE_FILE)) {
 		doSystem("killall %s %s", "-SIGUSR1", "miniupnpd");
 	}
