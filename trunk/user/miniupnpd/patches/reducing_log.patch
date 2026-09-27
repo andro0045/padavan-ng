@@ -490,3 +490,14 @@
 +		}
  		if (!disable_port_forwarding && reserved) {
  			if (GETFLAG(ALLOWPRIVATEIPV4MASK)) {
+ 				syslog(LOG_WARNING, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
+ 			} else {
+ 				syslog(LOG_WARNING, "Reserved / private IP address %s on ext interface %s: Port forwarding is impossible", if_addr, ext_if_name);
+ 				disable_port_forwarding = 1;
+ 			}
+ 		} else if (disable_port_forwarding && !reserved) {
+ 			syslog(LOG_INFO, "Public IP address %s on ext interface %s: Port forwarding is enabled", if_addr, ext_if_name);
+ 			disable_port_forwarding = 0;
+ 		}
+ 	}
+ }
