@@ -800,9 +800,6 @@ restart_nmbd(void)
 // miniupnpd
 ///////////////////////////////////////////////////////////////////////
 
-static unsigned long upnp_start_time = 0;
-static int upnp_initialized = 0;
-
 int
 is_upnp_run(void)
 {
@@ -935,8 +932,6 @@ start_upnp(void)
 
 	create_file(UPNPD_LEASE_FILE);
 
-	upnp_start_time = uptime();
-
 	char *current_ip = nvram_safe_get("wan0_ipaddr");
 	if (current_ip == NULL || strlen(current_ip) == 0 || strcmp(current_ip, "0.0.0.0") == 0) {
 		pid_t pid = fork();
@@ -948,15 +943,14 @@ start_upnp(void)
 					break;
 			}
 			sleep(2);
-			upnp_start_time = uptime();
-			upnp_initialized = 1;
-			eval("/usr/bin/miniupnpd");
+			if (!is_upnp_run()) {
+				eval("/usr/bin/miniupnpd");
+			}
 			exit(0);
 		}
 		return 0;
 	}
 
-	upnp_initialized = 1;
 	return eval("/usr/bin/miniupnpd");
 }
 
@@ -965,7 +959,6 @@ stop_upnp(void)
 {
 	char* svcs[] = { "miniupnpd", NULL };
 	kill_services(svcs, 3, 1);
-	upnp_start_time = 0;
 }
 
 void
@@ -982,27 +975,21 @@ check_upnp_wanif_changed(char *wan_ifname)
 void
 update_upnp(void)
 {
-	if (!is_upnp_run()) {
-		start_upnp();
-		return;
-	}
+	int max_wait = 20;
 
 	if (nvram_get_int("wan_nat_x") == 0) {
 		stop_upnp();
 		return;
 	}
 
-	if (upnp_initialized) {
-		upnp_initialized = 0;
-		return;
+	if (is_upnp_run()) {
+		stop_upnp();
+		while (is_upnp_run() && max_wait > 0) {
+			usleep(50000);
+			max_wait--;
+		}
 	}
 
-	if (upnp_start_time > 0 && (uptime() - upnp_start_time) < 15) {
-		return;
-	}
-
-	stop_upnp();
-	sleep(1);
 	start_upnp();
 }
 
