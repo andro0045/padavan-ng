@@ -476,7 +476,7 @@
   
 --- a/miniupnpd.c
 +++ b/miniupnpd.c
-@@ -1181,8 +1185,11 @@
+@@ @@
  	} else {
  		int reserved = addr_is_reserved(&addr);
 +		if (disable_port_forwarding && reserved && GETFLAG(ALLOWPRIVATEIPV4MASK)) {
@@ -484,8 +484,7 @@
 +		}
  		if (!disable_port_forwarding && reserved) {
  			if (GETFLAG(ALLOWPRIVATEIPV4MASK)) {
--				syslog(LOG_WARNING, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
-+				syslog(LOG_DEBUG, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
+ 				syslog(LOG_DEBUG, "IGNORED : Reserved / private IP address %s on ext interface %s", if_addr, ext_if_name);
  			} else {
  				syslog(LOG_WARNING, "Reserved / private IP address %s on ext interface %s: Port forwarding is impossible", if_addr, ext_if_name);
  				syslog(LOG_INFO, "You are probably behind NAT, enable option ext_perform_stun=yes to detect public IP address");
