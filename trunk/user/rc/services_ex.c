@@ -975,22 +975,19 @@ check_upnp_wanif_changed(char *wan_ifname)
 void
 update_upnp(void)
 {
-	int max_wait = 20;
+	if (!is_upnp_run()) {
+		start_upnp();
+		return;
+	}
 
 	if (nvram_get_int("wan_nat_x") == 0) {
 		stop_upnp();
 		return;
 	}
 
-	if (is_upnp_run()) {
-		stop_upnp();
-		while (is_upnp_run() && max_wait > 0) {
-			usleep(50000);
-			max_wait--;
-		}
+	if (check_if_file_exist(UPNPD_LEASE_FILE)) {
+		doSystem("killall %s %s", "-SIGUSR1", "miniupnpd");
 	}
-
-	start_upnp();
 }
 
 void
