@@ -276,7 +276,7 @@ struct nvram_pair router_defaults[] = {
 	{ "rt_wme", "1" },
 	{ "rt_wme_no_ack", "off" },
 	{ "rt_IgmpSnEnable", "1" },
-	{ "rt_TxPower", "100" },
+	{ "rt_TxPower", "40" },
 	{ "rt_TxBurst", "1" },
 	{ "rt_PktAggregate", "1" },
 	{ "rt_APSDCapable", "1" },
@@ -425,7 +425,7 @@ struct nvram_pair router_defaults[] = {
 	{ "ip6_lan_sfps", "4096" }, // 0x1000
 	{ "ip6_lan_sfpe", "4352" }, // 0x1100
 
-	{ "upnp_enable_x", "1" },
+	{ "upnp_enable_x", "0" },
 	{ "upnp_proto", "0" },
 	{ "upnp_secure", "1" },
 	{ "upnp_clean_min", "10" },
@@ -602,8 +602,8 @@ struct nvram_pair router_defaults[] = {
 	{ "sw_mode", "1" },
 #endif
 
-	{ "telnetd", "1" },
-	{ "sshd_enable", "0" },
+	{ "telnetd", "0" },
+	{ "sshd_enable", "1" },
 	{ "sshd_enable_gp", "0" },
 	{ "wins_enable", "0" },
 #if defined (APP_DOH)
