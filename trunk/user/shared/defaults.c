@@ -662,7 +662,7 @@ struct nvram_pair router_defaults[] = {
 	{ "dnscrypt_listen_port", "65053" },
 	{ "dnscrypt_mode", "1" },
 #endif
-	{ "lltd_enable", "1" },
+	{ "lltd_enable", "0" },
 	{ "adsc_enable", "0" },
 	{ "crond_enable", "0" },
 	{ "crond_log", "0" },
