@@ -7,7 +7,7 @@ set -e
 
 SRC_CA_URL="https://ccadb.my.salesforce-sites.com/mozilla/IncludedRootsPEMTxt?TrustBitsInclude=Websites"
 
-curl -L -s -f --connect-timeout 20 "$SRC_CA_URL" -o ca-certificates.new || rm -f ca-certificates.new
+wget --https-only --no-hsts -t5 -T20 $SRC_CA_URL -O ca-certificates.new || rm -f ca-certificates.new
 
 [ -s ca-certificates.new ] && (
     grep -q "BEGIN CERTIFICATE" ca-certificates.new \
