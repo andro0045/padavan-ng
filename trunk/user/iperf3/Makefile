@@ -1,6 +1,6 @@
 # https://software.es.net/iperf
 
-SRC_NAME = iperf-3.15
+SRC_NAME = iperf-3.22
 SRC_URL = https://downloads.es.net/pub/iperf/$(SRC_NAME).tar.gz
 
 all: download_test extract_test config_test

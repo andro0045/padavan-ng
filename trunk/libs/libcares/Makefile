@@ -1,6 +1,6 @@
 # https://c-ares.org
 
-SRC_VER = 1.34.6
+SRC_VER = 1.34.8
 SRC_NAME = c-ares-$(SRC_VER)
 SRC_URL = https://github.com/c-ares/c-ares/releases/download/v$(SRC_VER)/$(SRC_NAME).tar.gz
 

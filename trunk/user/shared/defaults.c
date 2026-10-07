@@ -57,7 +57,7 @@ struct nvram_pair router_defaults[] = {
 	{ "lan_dns1", "" },			/* LAN DNS1 */
 	{ "lan_dns2", "" },			/* LAN DNS2 */
 	{ "lan_domain", "" },			/* LAN domain name */
-	{ "lan_stp", "1" },			/* LAN spanning tree protocol */
+	{ "lan_stp", "0" },			/* LAN spanning tree protocol */
 
 	/* WAN H/W parameters */
 	{ "wan_ifname", IFNAME_WAN },		/* WAN interface name */
@@ -276,7 +276,7 @@ struct nvram_pair router_defaults[] = {
 	{ "rt_wme", "1" },
 	{ "rt_wme_no_ack", "off" },
 	{ "rt_IgmpSnEnable", "1" },
-	{ "rt_TxPower", "100" },
+	{ "rt_TxPower", "40" },
 	{ "rt_TxBurst", "1" },
 	{ "rt_PktAggregate", "1" },
 	{ "rt_APSDCapable", "1" },
@@ -425,7 +425,7 @@ struct nvram_pair router_defaults[] = {
 	{ "ip6_lan_sfps", "4096" }, // 0x1000
 	{ "ip6_lan_sfpe", "4352" }, // 0x1100
 
-	{ "upnp_enable_x", "1" },
+	{ "upnp_enable_x", "0" },
 	{ "upnp_proto", "0" },
 	{ "upnp_secure", "1" },
 	{ "upnp_clean_min", "10" },
@@ -602,8 +602,8 @@ struct nvram_pair router_defaults[] = {
 	{ "sw_mode", "1" },
 #endif
 
-	{ "telnetd", "1" },
-	{ "sshd_enable", "0" },
+	{ "telnetd", "0" },
+	{ "sshd_enable", "1" },
 	{ "sshd_enable_gp", "0" },
 	{ "wins_enable", "0" },
 #if defined (APP_DOH)
@@ -613,7 +613,7 @@ struct nvram_pair router_defaults[] = {
 	{ "doh_server2", "" },
 	{ "doh_server3", "" },
 	{ "doh_quic", "0" },
-	{ "doh_bootstrap_dns", "1.1.1.1,8.8.8.8,9.9.9.9,208.67.222.222,77.88.8.8" },
+	{ "doh_bootstrap_dns", "1.1.1.1,8.8.8.8,9.9.9.9,77.88.8.8" },
 	{ "doh_listen_port", "5053" },
 	{ "doh_listen_mode", "0" },
 	{ "doh_mode", "1" },
@@ -662,7 +662,7 @@ struct nvram_pair router_defaults[] = {
 	{ "dnscrypt_listen_port", "65053" },
 	{ "dnscrypt_mode", "1" },
 #endif
-	{ "lltd_enable", "1" },
+	{ "lltd_enable", "0" },
 	{ "adsc_enable", "0" },
 	{ "crond_enable", "0" },
 	{ "crond_log", "0" },

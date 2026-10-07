@@ -4,7 +4,7 @@
 SRC_NAME1=squashfs-4.7.5
 SRC_URL1=https://github.com/plougher/squashfs-tools/archive/refs/tags/4.7.5.tar.gz
 
-SRC_NAME2=xz-5.8.3
+SRC_NAME2=xz-5.8.4
 SRC_URL2=https://github.com/tukaani-project/xz/archive/refs/tags/v5.8.3.tar.gz
 
 all: download_test extract_test config_xz build_xz build_squashfs

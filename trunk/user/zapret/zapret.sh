@@ -104,6 +104,7 @@ startup_args()
     echo "--pidfile=$PID_FILE"
     echo "--user=$USER"
     echo "--qnum=$NFQUEUE_NUM"
+    echo "--bind-fix4"
     [ "$LOG_LEVEL" = "1" ] && echo "--debug=syslog"
 
     if [ "$NFQWS_VER" = "2" ]; then

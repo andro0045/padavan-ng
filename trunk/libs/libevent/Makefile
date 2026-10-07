@@ -1,7 +1,7 @@
 # https://libevent.org
 # https://github.com/libevent/libevent
 
-SRC_VER = 2.1.12-stable
+SRC_VER = 2.1.13-stable
 SRC_NAME=libevent-$(SRC_VER)
 SRC_URL=https://github.com/libevent/libevent/releases/download/release-$(SRC_VER)/$(SRC_NAME).tar.gz
 

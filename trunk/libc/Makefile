@@ -1,6 +1,6 @@
 # https://downloads.uclibc-ng.org/releases
 
-SRC_VER = 1.0.58
+SRC_VER = 1.0.59
 SRC_NAME = uClibc-ng-$(SRC_VER)
 SRC_URL = https://downloads.uclibc-ng.org/releases/$(SRC_VER)/$(SRC_NAME).tar.xz
 

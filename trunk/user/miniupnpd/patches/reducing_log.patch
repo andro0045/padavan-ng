@@ -58,19 +58,6 @@
  	for(ife = ifap; ife; ife = ife->ifa_next)
 --- a/minissdp.c
 +++ b/minissdp.c
-@@ -211,10 +211,12 @@
- 	{
- 		syslog(LOG_WARNING, "setsockopt(udp, SO_REUSEADDR): %m");
- 	}
-+/*
- 	if (setsockopt(s, SOL_SOCKET, SO_REUSEPORT, &on, sizeof(on)) < 0)
- 	{
- 		syslog(LOG_WARNING, "setsockopt(udp, SO_REUSEPORT): %m");
- 	}
-+*/
- #ifdef IP_RECVIF
- 	/* BSD */
- 	if(!ipv6) {
 @@ -625,7 +627,7 @@
  	       n, addr_str, l, buf);
  	if(n < 0)
@@ -456,16 +443,16 @@
  		SoapError(h, 404, "Invalid Var");
  	}
  
-@@ -1664,7 +1664,7 @@
- 		}
- 		else
- 		{
--			syslog(LOG_WARNING, "%s: Failed to convert hostname '%s' to IP address : %s",
-+			syslog(LOG_DEBUG, "%s: Failed to convert hostname '%s' to IP address : %s",
- 			       "PinholeVerification", int_ip, gai_strerror(r));
- 			SoapError(h, 402, "Invalid Args");
- 			return -1;
-@@ -2415,9 +2415,9 @@
+@@ -1772,7 +1772,7 @@ PinholeVerification(struct upnphttp * h, const char * int_ip, unsigned short int
+ 			r = getaddrinfo(int_ip, NULL, &hints, &ai);
+ 			if (r != 0)
+ 			{
+-				syslog(LOG_WARNING, "%s: Failed to convert hostname '%s' to IP address : %s",
++				syslog(LOG_DEBUG, "%s: Failed to convert hostname '%s' to IP address : %s",
+ 				       "PinholeVerification", int_ip, gai_strerror(r));
+ 				SoapError(h, 402, "Invalid Args");
+ 				return -1;
+@@ -2630,9 +2630,9 @@
  				return;
  			}
  		}
@@ -486,3 +473,4 @@
  	bodylen = snprintf(body, sizeof(body), resp, errCode, errDesc);
  	BuildResp2_upnphttp(h, 500, "Internal Server Error", body, bodylen);
  	SendRespAndClose_upnphttp(h);
+  
