@@ -1,2 +1,5 @@
 configs.build/*.config export-ignore
 configs.release/*.config export-ignore
+
+* text=auto eol=lf
+*.patch text eol=lf
