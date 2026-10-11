@@ -1,4 +1,4 @@
-SRC_NAME=mbedtls-3.6.6
+SRC_NAME=mbedtls-3.6.7
 SRC_URL=https://github.com/Mbed-TLS/mbedtls/releases/download/$(SRC_NAME)/$(SRC_NAME).tar.bz2
 
 all: download_test extract_test config_test

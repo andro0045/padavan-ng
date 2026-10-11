@@ -1,6 +1,6 @@
 # https://github.com/LuaJIT
 
-SRC_NAME = luajit-2.1-24c20c9
+SRC_NAME = luajit-2.1-c6ffc14
 SRC_URL = https://github.com/LuaJIT/LuaJIT/archive/refs/heads/v2.1.tar.gz
 CFLAGS += -I$(STAGEDIR)/include -L$(STAGEDIR)/lib -DLUAJIT_DISABLE_FFI -DLUAJIT_DISABLE_GC64
 
