@@ -87,7 +87,7 @@ configure:
 		--without-librtmp \
 		--without-libssh \
 		--without-libssh2 \
-		--with-nghttp2 \
+		--with-nghttp2=$(STAGEDIR) \
 		--without-mbedtls \
 		--without-schannel \
 		--without-wolfssl \
