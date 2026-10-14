@@ -1,7 +1,7 @@
 # https://curl.se
 
-SRC_NAME = curl-8.22.0
-SRC_URL = https://github.com/curl/curl/releases/download/curl-8_22_0/$(SRC_NAME).tar.xz
+SRC_NAME = curl-8.23.0
+SRC_URL = https://github.com/curl/curl/releases/download/curl-8_23_0/$(SRC_NAME).tar.xz
 
 ifeq ($(shell LC_ALL=C [ $(SSL_VER) '<' 3.0 ] && echo 1), 1)
 SRC_NAME = curl-8.17.0
@@ -57,10 +57,8 @@ configure:
 		--disable-ldap \
 		--disable-ldaps \
 		--disable-rt \
-		--disable-rtsp \
 		--disable-telnet \
 		--disable-tftp \
-		--disable-smb \
 		--disable-smtp \
 		--disable-pop3 \
 		--disable-imap \
