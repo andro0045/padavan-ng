@@ -8,6 +8,10 @@ SRC_NAME = curl-8.17.0
 SRC_URL = https://github.com/curl/curl/releases/download/curl-8_17_0/$(SRC_NAME).tar.xz
 endif
 
+ifeq ($(SRC_NAME),curl-8.17.0)
+EXTRA_CONFIG_FLAGS = --disable-smb
+endif
+
 QUIC = --without-nghttp3 --without-ngtcp2
 ifeq ($(CONFIG_FIRMWARE_INCLUDE_QUIC),y)
 QUIC = --with-nghttp3 --with-ngtcp2
@@ -49,6 +53,7 @@ configure:
 		--enable-shared \
 		$(if $(CONFIG_IPV6),--enable-ipv6,--disable-ipv6) \
 		$(QUIC) \
+		$(EXTRA_CONFIG_FLAGS) \
 		--without-quiche \
 		--disable-ipfs \
 		--disable-rtsp \
