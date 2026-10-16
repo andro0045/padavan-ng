@@ -1,0 +1,13 @@
+diff --git a/dnsmasq.c b/dnsmasq.c
+index adaa692e..73b74e80 100644
+--- a/src/dnsmasq.c
++++ b/src/dnsmasq.c
+@@ -881,7 +881,7 @@ int main (int argc, char **argv)
+ 	my_syslog(LOG_INFO, _("DNS service limited to localhost"));
+     }
+   
+-  my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
++  // my_syslog(LOG_INFO, _("compile time options: %s"), compile_opts);
+ 
+   if (chown_warn != 0)
+     {
