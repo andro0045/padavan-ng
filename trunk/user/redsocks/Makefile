@@ -1,7 +1,7 @@
 # https://github.com/semigodking/redsocks
 
-SRC_NAME = redsocks-release-0.71
-SRC_URL = https://github.com/semigodking/redsocks/archive/refs/tags/release-0.71.tar.gz
+SRC_NAME = redsocks-release-0.72
+SRC_URL = https://github.com/semigodking/redsocks/archive/refs/tags/release-0.72.tar.gz
 
 CFLAGS  += -ffunction-sections -fdata-sections -fvisibility=hidden
 LDFLAGS += -Wl,--gc-sections
