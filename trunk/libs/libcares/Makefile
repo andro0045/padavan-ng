@@ -48,3 +48,4 @@ install:
 	$(MAKE) -C $(SRC_NAME)/build install /
 
 romfs:
+	@echo "c-ares compiled statically, skipping romfs install."
