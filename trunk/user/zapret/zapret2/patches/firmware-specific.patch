@@ -1,5 +1,5 @@
---- zapret2-0.9.4.4.orig/ip2net/Makefile
-+++ zapret2-0.9.4.4/ip2net/Makefile
+--- a/ip2net/Makefile
++++ b/ip2net/Makefile
 @@ -1,11 +1,8 @@
  CC ?= cc
  OPTIMIZE ?= -Os
@@ -13,8 +13,8 @@
  
  LIBS = 
  LIBS_WIN = -lws2_32
---- zapret2-0.9.4.4.orig/nfq2/Makefile
-+++ zapret2-0.9.4.4/nfq2/Makefile
+--- a/nfq2/Makefile
++++ b/nfq2/Makefile
 @@ -1,18 +1,14 @@
  CC ?= cc
  PKG_CONFIG ?= pkg-config
@@ -36,8 +36,8 @@
  LDFLAGS_ANDROID = -llog
  STRIPP=-s
  LIBS =
---- zapret2-0.9.4.4.orig/nfq2/sec.c
-+++ zapret2-0.9.4.4/nfq2/sec.c
+--- a/nfq2/sec.c
++++ b/nfq2/sec.c
 @@ -14,8 +14,8 @@
  
  #include <sys/prctl.h>
@@ -100,8 +100,8 @@
 +		return false;
  	}
  #endif
---- zapret2-0.9.4.4.orig/nfq2/sec.h
-+++ zapret2-0.9.4.4/nfq2/sec.h
+--- a/nfq2/sec.h
++++ b/nfq2/sec.h
 @@ -2,11 +2,12 @@
  
  #include <sys/types.h>
