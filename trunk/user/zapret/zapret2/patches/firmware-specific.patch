@@ -44,45 +44,38 @@
  #include <sys/syscall.h>
 -#include <linux/securebits.h>
 -#include <linux/seccomp.h>
-+// #include <linux/securebits.h>
-+// #include <linux/seccomp.h>
++//#include <linux/securebits.h>
++//#include <linux/seccomp.h>
  #include <linux/filter.h>
  // __X32_SYSCALL_BIT defined in linux/unistd.h
  #include <linux/unistd.h>
-@@ -113,6 +113,7 @@
- 	filter->k = k;
- }
+@@ -113,6 +113,8 @@
  // deny all blocked syscalls
-+/*
  static bool set_seccomp(void)
  {
++	return true;
++#if 0
  #ifdef __X32_SYSCALL_BIT
-@@ -142,6 +143,7 @@
- 	set_filter(&prog.filter[idx++], BPF_JMP + BPF_JGT + BPF_K, 2 + BLOCKED_SYSCALL_COUNT, 0, 2); // 1 - stdout, 2 - stderr. greater are bad
- 	set_filter(&prog.filter[idx++], BPF_LD + BPF_W + BPF_ABS, 0, 0, syscall_nr); // reload syscall_nr
- */
-+/*
- 	for(i=0 ; i<BLOCKED_SYSCALL_COUNT ; i++)
- 	{
- 		set_filter(&prog.filter[idx++], BPF_JMP + BPF_JEQ + BPF_K, BLOCKED_SYSCALL_COUNT-i, 0, blocked_syscalls[i]);
-@@ -150,9 +152,12 @@
+  #define SECCOMP_PROG_SIZE (6 + BLOCKED_SYSCALL_COUNT)
+ #else
+@@ -150,9 +152,13 @@
  	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_KILL); // fail case
  	return prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog) >= 0;
  }
-+*/
++#endif
  
  bool sec_harden(void)
  {
 +	return false;
-+/*
++#if 0
  	bool bRes = true;
  	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
  	{
-@@ -168,11 +173,9 @@
+@@ -168,11 +174,9 @@
  	}
  #endif
  	return bRes;
-+*/
++#endif
  }
  
 -
@@ -90,7 +83,23 @@
 -
  bool checkpcap(uint64_t caps)
  {
- 	if (!caps) return true; // no special caps reqd
+@@ -266,15 +270,6 @@
+ #ifdef __linux__
+ 	if (prctl(PR_SET_KEEPCAPS, 1L))
+ 	{
+-		int e=errno;
+-		// if SECBIT_NO_SETUID_FIXUP is set PR_SET_KEEPCAPS is not necessary
+-		int bits = prctl(PR_GET_SECUREBITS);
+-		if (bits<0 || !(bits & SECBIT_NO_SETUID_FIXUP))
+-		{
+-			errno=e;
+-			DLOG_PERROR("prctl(PR_SET_KEEPCAPS)");
+-			return false;
+-		}
++		DLOG_PERROR("prctl(PR_SET_KEEPCAPS)");
++		return false;
+ 	}
+ #endif
 --- zapret2-0.9.4.4.orig/nfq2/sec.h
 +++ zapret2-0.9.4.4/nfq2/sec.h
 @@ -2,11 +2,12 @@
