@@ -10,7 +10,7 @@ CFLAGS += -ffunction-sections -fdata-sections -fvisibility=hidden -Wno-error
 LDFLAGS += -Wl,--gc-sections
 
 all: download_test extract_test
-	$(MAKE) -j$(HOST_NCPU) -C $(SRC_NAME)
+	$(MAKE) -j$(HOST_NCPU) -C $(SRC_NAME) CFLAGS="$(CFLAGS)"
 
 download_test:
 	( if [ ! -f $(SRC_NAME).tar.gz ]; then \
