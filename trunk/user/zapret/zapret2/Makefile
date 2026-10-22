@@ -6,7 +6,7 @@ SRC_URL = https://github.com/bol-van/zapret2/archive/refs/tags/v$(SRC_VER).tar.g
 
 CFLAGS += -DZAPRET_GH_VER=v$(SRC_VER) -DZAPRET_GH_HASH=release
 CFLAGS += -I$(STAGEDIR)/include/luajit-2.1
-CFLAGS += -ffunction-sections -fdata-sections -fvisibility=hidden
+CFLAGS += -ffunction-sections -fdata-sections -fvisibility=hidden -Wno-error
 LDFLAGS += -Wl,--gc-sections
 
 all: download_test extract_test
