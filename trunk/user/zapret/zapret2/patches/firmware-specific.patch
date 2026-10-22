@@ -49,7 +49,7 @@
  #include <linux/filter.h>
  // __X32_SYSCALL_BIT defined in linux/unistd.h
  #include <linux/unistd.h>
-@@ -113,6 +113,8 @@
+@@ -116,6 +116,8 @@ static void set_filter(struct sock_filter *filter, __u16 code, __u8 jt, __u8 jf,
  // deny all blocked syscalls
  static bool set_seccomp(void)
  {
@@ -58,7 +58,7 @@
  #ifdef __X32_SYSCALL_BIT
   #define SECCOMP_PROG_SIZE (6 + BLOCKED_SYSCALL_COUNT)
  #else
-@@ -150,9 +152,13 @@
+@@ -151,9 +153,12 @@ static bool set_seccomp(void)
  	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_KILL); // fail case
  	return prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog) >= 0;
  }
@@ -71,7 +71,7 @@
  	bool bRes = true;
  	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
  	{
-@@ -168,11 +174,9 @@
+@@ -169,11 +174,9 @@ bool sec_harden(void)
  	}
  #endif
  	return bRes;
@@ -83,7 +83,8 @@
 -
  bool checkpcap(uint64_t caps)
  {
-@@ -266,15 +270,6 @@
+ 	if (!caps) return true; // no special caps reqd
+@@ -267,15 +270,8 @@ bool droproot(uid_t uid, const char *user, const gid_t *gid, int gid_count)
  #ifdef __linux__
  	if (prctl(PR_SET_KEEPCAPS, 1L))
  	{
@@ -100,6 +101,18 @@
 +		return false;
  	}
  #endif
+ 	if (user)
+@@ -284,8 +280,8 @@ bool droproot(uid_t uid, const char *user, const gid_t *gid, int gid_count)
+ 		// better to leave it to the os
+ 		if (initgroups(user,gid[0]))
+ 		{
+-			DLOG_PERROR("initgroups");
+-			return false;
++		DLOG_PERROR("prctl(PR_SET_KEEPCAPS)");
++		return false;
+ 		}
+ 	}
+ 	else
 --- a/nfq2/sec.h
 +++ b/nfq2/sec.h
 @@ -2,11 +2,12 @@
