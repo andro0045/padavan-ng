@@ -1,5 +1,5 @@
---- a/ip2net/Makefile
-+++ b/ip2net/Makefile
+--- zapret2-0.9.4.4.orig/ip2net/Makefile
++++ zapret2-0.9.4.4/ip2net/Makefile
 @@ -1,11 +1,8 @@
  CC ?= cc
  OPTIMIZE ?= -Os
@@ -13,8 +13,8 @@
  
  LIBS = 
  LIBS_WIN = -lws2_32
---- a/nfq2/Makefile
-+++ b/nfq2/Makefile
+--- zapret2-0.9.4.4.orig/nfq2/Makefile
++++ zapret2-0.9.4.4/nfq2/Makefile
 @@ -1,18 +1,14 @@
  CC ?= cc
  PKG_CONFIG ?= pkg-config
@@ -36,46 +36,51 @@
  LDFLAGS_ANDROID = -llog
  STRIPP=-s
  LIBS =
---- a/nfq2/sec.c
-+++ b/nfq2/sec.c
-@@ -14,8 +14,8 @@
+--- zapret2-0.9.4.4.orig/nfq2/sec.c
++++ zapret2-0.9.4.4/nfq2/sec.c
+@@ -14,7 +14,7 @@
  
  #include <sys/prctl.h>
  #include <sys/syscall.h>
--#include <linux/securebits.h>
 -#include <linux/seccomp.h>
-+//#include <linux/securebits.h>
 +//#include <linux/seccomp.h>
  #include <linux/filter.h>
  // __X32_SYSCALL_BIT defined in linux/unistd.h
  #include <linux/unistd.h>
-@@ -116,6 +116,8 @@ static void set_filter(struct sock_filter *filter, __u16 code, __u8 jt, __u8 jf,
+@@ -113,6 +113,7 @@
+ 	filter->k = k;
+ }
  // deny all blocked syscalls
++/*
  static bool set_seccomp(void)
  {
-+	return true;
-+#if 0
  #ifdef __X32_SYSCALL_BIT
-  #define SECCOMP_PROG_SIZE (6 + BLOCKED_SYSCALL_COUNT)
- #else
-@@ -151,9 +153,12 @@ static bool set_seccomp(void)
+@@ -142,6 +143,7 @@
+ 	set_filter(&prog.filter[idx++], BPF_JMP + BPF_JGT + BPF_K, 2 + BLOCKED_SYSCALL_COUNT, 0, 2); // 1 - stdout, 2 - stderr. greater are bad
+ 	set_filter(&prog.filter[idx++], BPF_LD + BPF_W + BPF_ABS, 0, 0, syscall_nr); // reload syscall_nr
+ */
++/*
+ 	for(i=0 ; i<BLOCKED_SYSCALL_COUNT ; i++)
+ 	{
+ 		set_filter(&prog.filter[idx++], BPF_JMP + BPF_JEQ + BPF_K, BLOCKED_SYSCALL_COUNT-i, 0, blocked_syscalls[i]);
+@@ -150,9 +152,12 @@
  	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_KILL); // fail case
  	return prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog) >= 0;
  }
-+#endif
++*/
  
  bool sec_harden(void)
  {
 +	return false;
-+#if 0
++/*
  	bool bRes = true;
  	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
  	{
-@@ -169,11 +174,9 @@ bool sec_harden(void)
+@@ -168,11 +173,9 @@
  	}
  #endif
  	return bRes;
-+#endif
++*/
  }
  
 -
@@ -84,37 +89,8 @@
  bool checkpcap(uint64_t caps)
  {
  	if (!caps) return true; // no special caps reqd
-@@ -267,15 +270,8 @@ bool droproot(uid_t uid, const char *user, const gid_t *gid, int gid_count)
- #ifdef __linux__
- 	if (prctl(PR_SET_KEEPCAPS, 1L))
- 	{
--		int e=errno;
--		// if SECBIT_NO_SETUID_FIXUP is set PR_SET_KEEPCAPS is not necessary
--		int bits = prctl(PR_GET_SECUREBITS);
--		if (bits<0 || !(bits & SECBIT_NO_SETUID_FIXUP))
--		{
--			errno=e;
--			DLOG_PERROR("prctl(PR_SET_KEEPCAPS)");
--			return false;
--		}
-+		DLOG_PERROR("prctl(PR_SET_KEEPCAPS)");
-+		return false;
- 	}
- #endif
- 	if (user)
-@@ -284,8 +280,8 @@ bool droproot(uid_t uid, const char *user, const gid_t *gid, int gid_count)
- 		// better to leave it to the os
- 		if (initgroups(user,gid[0]))
- 		{
--			DLOG_PERROR("initgroups");
--			return false;
-+		DLOG_PERROR("prctl(PR_SET_KEEPCAPS)");
-+		return false;
- 		}
- 	}
- 	else
---- a/nfq2/sec.h
-+++ b/nfq2/sec.h
+--- zapret2-0.9.4.4.orig/nfq2/sec.h
++++ zapret2-0.9.4.4/nfq2/sec.h
 @@ -2,11 +2,12 @@
  
  #include <sys/types.h>
