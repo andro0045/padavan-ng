@@ -38,10 +38,10 @@
  LIBS =
 --- zapret2-0.9.4.4.orig/nfq2/sec.c
 +++ zapret2-0.9.4.4/nfq2/sec.c
-@@ -14,7 +14,7 @@
- 
+@@ -15,7 +15,7 @@
  #include <sys/prctl.h>
  #include <sys/syscall.h>
+ #include <linux/securebits.h>
 -#include <linux/seccomp.h>
 +//#include <linux/seccomp.h>
  #include <linux/filter.h>
