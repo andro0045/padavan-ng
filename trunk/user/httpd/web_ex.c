@@ -41,6 +41,7 @@
 #include <net/if.h>
 #include <linux/types.h>
 #include <linux/sockios.h>
+#include <ifaddrs.h>
 
 #ifndef __user
 #define __user
@@ -60,6 +61,15 @@
 #define GROUP_FLAG_DELETE 	1
 #define GROUP_FLAG_ADD 		2
 #define GROUP_FLAG_REMOVE 	3
+#define MAX_IFACES		32
+
+struct iface {
+    char name[IFNAMSIZ];
+    char ipv4[INET_ADDRSTRLEN];
+#ifdef USE_IPV6
+    char ipv6[INET6_ADDRSTRLEN];
+#endif
+};
 
 static int apply_cgi_group(webs_t wp, int sid, struct variable *var, const char *groupName, int flag);
 static void nvram_clr_group_temp(struct variable *v);
@@ -2048,20 +2058,86 @@ nf_values_hook(int eid, webs_t wp, int argc, char **argv)
 static int
 net_iface_list_hook(int eid, webs_t wp, int argc, char **argv)
 {
-	FILE *fp;
-	char ifaces[256] = {0};
+	struct ifaddrs *addrs, *ifa;
+	struct iface ifaces[MAX_IFACES] = {0};
+	int count = 0;
 
-	fp = popen("ls -1 /sys/class/net"
-		   "| grep -vE '^(lo|ra[0-9]|rai[0-9]|wds)'"
-		   "| xargs | tr -s ' ' ','", "r");
-	if (fp ) {
-		fgets(ifaces, sizeof(ifaces), fp);
-		pclose(fp);
-		if (strlen(ifaces) > 0)
-			ifaces[strlen(ifaces) - 1] = 0;
+	if (getifaddrs(&addrs) == -1) {
+		return 1;
 	}
 
-	websWrite(wp, "function net_iface_list() { return '%s';}\n", ifaces);
+	for (ifa = addrs; ifa; ifa = ifa->ifa_next) {
+		if (!ifa->ifa_name ||
+		    !ifa->ifa_addr ||
+		    strcmp(ifa->ifa_name, "lo") == 0)
+			continue;
+
+		int af = ifa->ifa_addr->sa_family;
+
+		if (af != AF_INET
+#ifdef USE_IPV6
+			&& af != AF_INET6
+#endif
+		)
+			continue;
+
+		struct iface *p = NULL;
+
+		for (int i = 0; i < count; i++) {
+			if (strcmp(ifaces[i].name, ifa->ifa_name) == 0) {
+				p = &ifaces[i];
+				break;
+			}
+		}
+
+		if (!p) {
+			if (count >= MAX_IFACES)
+				continue;
+
+			p = &ifaces[count++];
+			snprintf(p->name, sizeof(p->name), "%s", ifa->ifa_name);
+		}
+
+		if (af == AF_INET && !p->ipv4[0]) {
+			struct sockaddr_in *addr = (struct sockaddr_in *)ifa->ifa_addr;
+
+			inet_ntop(AF_INET, &addr->sin_addr, p->ipv4, sizeof(p->ipv4));
+		}
+#ifdef USE_IPV6
+		else if (af == AF_INET6 && !p->ipv6[0]) {
+			struct sockaddr_in6 *addr = (struct sockaddr_in6 *)ifa->ifa_addr;
+
+			if (!IN6_IS_ADDR_LINKLOCAL(&addr->sin6_addr)) {
+				inet_ntop(AF_INET6, &addr->sin6_addr, p->ipv6, sizeof(p->ipv6));
+			}
+		}
+#endif
+	}
+
+	freeifaddrs(addrs);
+
+	int first = 1;
+
+	for (int i = 0; i < count; i++) {
+		struct iface *p = &ifaces[i];
+		const char *ip = p->ipv4;
+
+#ifdef USE_IPV6
+		if (!ip[0])
+			ip = p->ipv6;
+#endif
+
+		if (!ip[0])
+			continue;
+
+		websWrite(wp,
+			  "%s {\"name\": \"%s\", \"ip\": \"%s\"}",
+			  first ? "" : ",\n",
+			  p->name, ip);
+
+		first = 0;
+	}
+
 	return 0;
 }
 

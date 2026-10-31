@@ -107,6 +107,7 @@ function change_tor_enabled(){
 	textarea_tor_enabled(v);
 
 	let allowed_list, items_list, allowed, items;
+	const sel_style = getComputedStyle(document.querySelector('select'));
 
 	allowed_list = "<% nvram_get_x("", "tor_clients_allowed"); %>";
 	items_list = "<% nvram_get_x("", "tor_clients"); %>";
@@ -132,7 +133,7 @@ function change_tor_enabled(){
 	$j('#tor_clients_list').multiSelectDropdown({
 		items: data_clients,
 		placeholder: "<#ZapretWORestrictions#>",
-		width: '320px',
+		width: '318px',
 		allowDelete: true,
 		allowAdd: true,
 		addSuggestionText: '<#CTL_add#>',
@@ -146,15 +147,20 @@ function change_tor_enabled(){
 				.map(item => item.text)
 				.join(',');
 		}
+	}).css({
+		color: sel_style.color,
+		backgroundColor: sel_style.backgroundColor,
+		border: sel_style.border,
+		borderRadius: sel_style.borderRadius,
+		borderColor: sel_style.borderColor
 	});
 
 	if (!found_support_ipset())
 		return;
 
 	const excludeNames = new Set([
-		"nozapret",
-		"nozapret6",
-		"vpn.remote", "vpn.exclude", "vpn.clients",
+		"nozapret", "nozapret6",
+		"vpn.remote", "vpn.exclude", "vpn.clients", "vpn.remote.list", "vpn.exclude.list",
 		"tor.remote", "tor.exclude", "tor.clients"
 	]);
 
@@ -202,16 +208,18 @@ function change_tor_enabled(){
 	$j('#tor_ipset').multiSelectDropdown({
 		items: result,
 		placeholder: "<#Select_menu_default#>",
-		width: '320px',
+		width: '318px',
 		allowDelete: false,
 		allowAdd: false,
-		addSuggestionText: '<#CTL_add#>',
-		removeSpaces: true,
-		allowedItems: '^[a-zA-Z0-9-_.]+$',
-		allowedAlert: '<#JS_field_noletter#>',
 		onChange: function(selected){
 			document.form.tor_ipset_allowed.value = selected.join(',');
 		}
+	}).css({
+		color: sel_style.color,
+		backgroundColor: sel_style.backgroundColor,
+		border: sel_style.border,
+		borderRadius: sel_style.borderRadius,
+		borderColor: sel_style.borderColor
 	});
 }
 
@@ -249,9 +257,6 @@ function change_privoxy_enabled(){
         padding-right: 8px;
         padding-left: 8px;
     }
-    #tor_ipset .msd-title {
-        font-size: 13px;
-  }
 </style>
 </head>
 

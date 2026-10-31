@@ -34,7 +34,6 @@ $j(document).ready(function() {
 <script>
 
 <% login_state_hook(); %>
-<% net_iface_list(); %>
 
 function initial(){
 	show_banner(1);
@@ -81,6 +80,8 @@ function textarea_zapret_enabled(v){
 
 function change_zapret_enabled(){
 	var v = document.form.zapret_enable[0].checked;
+	const sel_style = getComputedStyle(document.querySelector('select'));
+
 	showhide_div('row_zapret_service', v);
 
 	textarea_zapret_enabled(v);
@@ -88,34 +89,46 @@ function change_zapret_enabled(){
 	let allowed_list, items_list, allowed, items;
 
 	allowed_list = "<% nvram_get_x("", "zapret_iface"); %>";
-	items_list = net_iface_list();
+	items_list = [<% net_iface_list(); %>];
 
-	allowed = allowed_list.replace(/\s+/g, '').split(',')
-		.filter(Boolean)
-		.map(item => item);
-	items = items_list.replace(/\s+/g, '').split(',')
-		.filter(Boolean)
-		.filter(item => !allowed.includes(item))
-		.map(text => ({text, checked: false}))
+	allowed = allowed_list.split(',')
+		.map(name => name.trim())
+		.filter(Boolean);
+
+	items = new Map(
+		items_list.map(item => [item.name, item.ip])
+	);
 
 	const data_iface = [
-		...allowed.map(text => ({text, checked: true})),
-		...items
+		...allowed.map(name => ({
+			text: name,
+			title: items.get(name) ?? "",
+			checked: true
+		})),
+		...items_list
+			.filter(item => !allowed.includes(item.name))
+			.map(item => ({
+				text: item.name,
+				title: item.ip,
+				checked: false
+			}))
 	];
 
 	$j('#zapret_iface_list').multiSelectDropdown({
 		items: data_iface,
 		placeholder: "<#APChnAuto#>",
-		width: '320px',
+		width: '318px',
 		allowDelete: false,
 		allowAdd: false,
-		addSuggestionText: '<#CTL_add#>',
-		removeSpaces: true,
-		allowedItems: '^[a-zA-Z0-9-_.:]+$',
-		allowedAlert: '<#JS_field_noletter#>',
 		onChange: function(selected){
 			document.form.zapret_iface.value = selected.join(',');
 		}
+	}).css({
+		color: sel_style.color,
+		backgroundColor: sel_style.backgroundColor,
+		border: sel_style.border,
+		borderRadius: sel_style.borderRadius,
+		borderColor: sel_style.borderColor
 	});
 
 	allowed_list = "<% nvram_get_x("", "zapret_clients_allowed"); %>";
@@ -142,7 +155,7 @@ function change_zapret_enabled(){
 	$j('#zapret_clients_list').multiSelectDropdown({
 		items: data_clients,
 		placeholder: "<#ZapretWORestrictions#>",
-		width: '320px',
+		width: '318px',
 		allowDelete: true,
 		allowAdd: true,
 		addSuggestionText: '<#CTL_add#>',
@@ -156,6 +169,12 @@ function change_zapret_enabled(){
 				.map(item => item.text)
 				.join(',');
 		}
+	}).css({
+		color: sel_style.color,
+		backgroundColor: sel_style.backgroundColor,
+		border: sel_style.border,
+		borderRadius: sel_style.borderRadius,
+		borderColor: sel_style.borderColor
 	});
 }
 

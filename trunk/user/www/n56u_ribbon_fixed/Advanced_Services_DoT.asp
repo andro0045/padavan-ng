@@ -131,7 +131,7 @@ function resolver_del(index){
 }
 
 function stubby_update_list(){
-	var code = `<table width="100%" style="table-layout: fixed; margin: 0; border: 1px solid #E3E3E3">`;
+	var code = `<table width="100%" style="table-layout: fixed; margin: 0">`;
 	var srv, ip;
 
 	for (i=0; i<4; i++){
@@ -141,10 +141,10 @@ function stubby_update_list(){
 			srv = Resolvers_List[i].host;
 			ip = Resolvers_List[i].ip;
 
-			code += `<tr ${(i % 2 === 0 ? 'style="background-color: #EEEEEE"' : '')}>`;
+			code += `<tr>`;
 			code += `<td style="width: 49%; word-break: break-all">${srv}</td>`;
 			code += `<td style="word-break: break-all">${ip}</td>`;
-			code += `<td style="width: 28px; padding-left: 0px"><div title="<#CTL_del#>" class="icon icon-remove" onclick="resolver_del(${i})" style="cursor:pointer; margin-left: 10px"></div></td>`;
+			code += `<td style="width: 40px; padding-left: 0px"><div title="<#CTL_del#>" class="icon icon-remove" onclick="resolver_del(${i})" style="cursor:pointer; margin-left: 10px"></div></td>`;
 			code += `</tr>`;
 		}
 		code += `<input type="hidden" name="stubby_server${i}" value="${srv}">`;
@@ -157,7 +157,9 @@ function stubby_update_list(){
 		$j(resolver_button_add).attr("disabled",true);
 
 	if (Resolvers_List.length == 0)
-		code += `<tr><td colspan="3" class="alert" style="text-align: center; padding: 0; border-color: transparent"><div class="alert alert-info" style="margin: 0"><#Service_Stubby_DNSList_Help#></div></td></tr>`;
+		code += `<tr><td colspan="3" style="text-align: center; padding-top: 0; padding-bottom: 0; border-color: transparent"><div class="alert alert-info" style="margin: 0"><#Service_Stubby_DNSList_Help#></div></td></tr>`;
+	else
+		code += `<tr><td colspan="3" style="padding: 0"></td></tr>`;
 
 	code += `</table>`;
 	$("Resolver_List_Block").innerHTML = code;
@@ -176,6 +178,8 @@ async function loadJSONToSelect(fileName, select) {
 			option.dataset.dns = obj.dns;
 			$(select).appendChild(option);
 		});
+
+		$(select).selectedIndex = -1;
 	} catch (error) {
 		console.error('Error:', error);
 	}
@@ -189,6 +193,30 @@ async function loadJSONToSelect(fileName, select) {
     .nav-tabs > li > a {
         padding-right: 8px;
         padding-left: 8px;
+    }
+    .input-wrapper {
+        vertical-align: middle;
+        position: relative;
+        display: inline-flex;
+        width: 280px;
+    }
+    .input-wrapper input {
+        width: 100%;
+        padding-right: 24px;
+        outline: none;
+    }
+    .input-wrapper select {
+        position: absolute;
+        right: 1px;
+        width: 24px;
+        clip-path: inset(1px 0 2px 0);
+        margin: 0;
+        border: none;
+        outline: none;
+        box-shadow: none;
+    }
+    input {
+        text-overflow: ellipsis;
     }
 </style>
 </head>
@@ -304,21 +332,21 @@ async function loadJSONToSelect(fileName, select) {
                                         <tr>
                                             <th><#LANHostConfig_ManualIP_itemname#>:</th>
                                             <td>
-                                                <input style="width: 275px" type="text" maxlength="60" class="input" size="10" id="stubby_server_ip"/>
+                                                <input style="width: 270px" type="text" maxlength="60" class="input" size="10" id="stubby_server_ip"/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th><#Adm_Svc_dnscrypt_resolver#></th>
                                             <td>
-                                                <span class="input-prepend">
-                                                    <input style="border-radius: 3px 0 0 3px; width: 252px" type="text" maxlength="128" class="input" size="15" id="stubby_server"/>&#8203;
-                                                    <select title="<#Service_Stubby_Resolvers_Header#>" class="input" id="stubby_resolver_list" style="margin-left: -1px; max-width: 24px; outline:0" onchange="on_stubby_select_change(this)" onclick="this.selectedIndex=-1;"></select>
-                                                </span>
+                                                <div class="input-wrapper">
+                                                    <input type="text" maxlength="128" class="input" size="15" id="stubby_server"/>
+                                                    <select title="<#Service_Stubby_Resolvers_Header#>" class="input" id="stubby_resolver_list" onchange="on_stubby_select_change(this)" onclick="this.selectedIndex=-1;"></select>
+                                                </div>
                                                 <button type="button" class="btn" style="outline:0" id="resolver_button_add" title="<#CTL_add#>" onclick="resolver_add();"><i class="icon icon-plus"></i></button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2" style="padding-top: 8px; padding-bottom: 18px; border: none">
+                                            <td colspan="2" style="padding: 0 0 18px 0; border: none">
                                                 <div id="Resolver_List_Block"></div>
                                             </td>
                                         </tr>
