@@ -12,6 +12,7 @@
 <HOSTLIST>
 #--hostlist-exclude=/etc/storage/zapret/exclude.list
 --payload=tls_client_hello
+--lua-desync=fake:blob=quic_google:tcp_seq=10000
 --lua-desync=fake:blob=fake_default_tls:tls_mod=rnd,dupsid,sni=fonts.google.com:tcp_seq=10000
 --lua-desync=multisplit:pos=1,midsld:seqovl=5:seqovl_pattern=0x1603030001
 --payload=http_req
