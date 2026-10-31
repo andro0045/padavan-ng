@@ -1,5 +1,5 @@
---- zapret2-0.9.4.4.orig/ip2net/Makefile
-+++ zapret2-0.9.4.4/ip2net/Makefile
+--- zapret2-1.0.6.orig/ip2net/Makefile
++++ zapret2-1.0.6/ip2net/Makefile
 @@ -1,11 +1,8 @@
  CC ?= cc
  OPTIMIZE ?= -Os
@@ -13,8 +13,8 @@
  
  LIBS = 
  LIBS_WIN = -lws2_32
---- zapret2-0.9.4.4.orig/nfq2/Makefile
-+++ zapret2-0.9.4.4/nfq2/Makefile
+--- zapret2-1.0.6.orig/nfq2/Makefile
++++ zapret2-1.0.6/nfq2/Makefile
 @@ -1,18 +1,14 @@
  CC ?= cc
  PKG_CONFIG ?= pkg-config
@@ -34,10 +34,10 @@
 -LDFLAGS += -flto=auto -Wl,--gc-sections $(LDFLAGS_PIE)
 +LDFLAGS += -Wl,--gc-sections
  LDFLAGS_ANDROID = -llog
+ LDFLAGS_CYGWIN = -Wl,--build-id=none
  STRIPP=-s
- LIBS =
---- zapret2-0.9.4.4.orig/nfq2/sec.c
-+++ zapret2-0.9.4.4/nfq2/sec.c
+--- zapret2-1.0.6.orig/nfq2/sec.c
++++ zapret2-1.0.6/nfq2/sec.c
 @@ -15,7 +15,7 @@
  #include <sys/prctl.h>
  #include <sys/syscall.h>
@@ -47,7 +47,7 @@
  #include <linux/filter.h>
  // __X32_SYSCALL_BIT defined in linux/unistd.h
  #include <linux/unistd.h>
-@@ -113,6 +113,7 @@
+@@ -114,6 +114,7 @@
  	filter->k = k;
  }
  // deny all blocked syscalls
@@ -55,7 +55,7 @@
  static bool set_seccomp(void)
  {
  #ifdef __X32_SYSCALL_BIT
-@@ -142,6 +143,7 @@
+@@ -143,6 +144,7 @@
  	set_filter(&prog.filter[idx++], BPF_JMP + BPF_JGT + BPF_K, 2 + BLOCKED_SYSCALL_COUNT, 0, 2); // 1 - stdout, 2 - stderr. greater are bad
  	set_filter(&prog.filter[idx++], BPF_LD + BPF_W + BPF_ABS, 0, 0, syscall_nr); // reload syscall_nr
  */
@@ -63,7 +63,7 @@
  	for(i=0 ; i<BLOCKED_SYSCALL_COUNT ; i++)
  	{
  		set_filter(&prog.filter[idx++], BPF_JMP + BPF_JEQ + BPF_K, BLOCKED_SYSCALL_COUNT-i, 0, blocked_syscalls[i]);
-@@ -150,9 +152,12 @@
+@@ -151,9 +153,12 @@
  	set_filter(&prog.filter[idx++], BPF_RET + BPF_K, 0, 0, SECCOMP_RET_KILL); // fail case
  	return prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog) >= 0;
  }
@@ -76,7 +76,7 @@
  	bool bRes = true;
  	if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0))
  	{
-@@ -168,11 +173,9 @@
+@@ -169,11 +174,9 @@
  	}
  #endif
  	return bRes;
@@ -89,8 +89,8 @@
  bool checkpcap(uint64_t caps)
  {
  	if (!caps) return true; // no special caps reqd
---- zapret2-0.9.4.4.orig/nfq2/sec.h
-+++ zapret2-0.9.4.4/nfq2/sec.h
+--- zapret2-1.0.6.orig/nfq2/sec.h
++++ zapret2-1.0.6/nfq2/sec.h
 @@ -2,11 +2,12 @@
  
  #include <sys/types.h>
