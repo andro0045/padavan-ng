@@ -62,11 +62,11 @@ restore()
     [ -n "$name" ] || return 1
     [ -f "$list" ] || { log "file not found: $list"; return 1; }
 
-    $BIN -! create $name nethash
+    $BIN -q create $name nethash
     $BIN flush $name
 
     filter_ipv4 < "$list" \
-        | sed -E 's#^(.*)$#add '"$name"' \1#' \
+        | sed -E 's#^(.*)$#add '"$name"' \1 -exist#' \
         | $BIN -! restore
 
     if [ $? -eq 0 ]; then
@@ -192,7 +192,6 @@ start_service()
         done
         [ $? -eq 0 ] && break
     done
-
     sync && sysctl -q vm.drop_caches=3
 
     if [ -f "$CONF" ]; then
