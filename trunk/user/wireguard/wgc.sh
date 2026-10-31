@@ -513,11 +513,7 @@ ipset_create()
     ipset_load "nv" "$VPN_CLIENTS_IPSET" "$NV_CLIENTS_LIST"
 
     local name
-    for name in $NV_REMOTE_IPSET_LIST; do
-        ipset -q create $name nethash -exist
-    done
-
-    for name in $NV_EXCLUDE_IPSET_LIST; do
+    for name in $NV_REMOTE_IPSET_LIST $NV_EXCLUDE_IPSET_LIST; do
         ipset -q create $name nethash -exist
     done
 

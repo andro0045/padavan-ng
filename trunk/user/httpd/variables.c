@@ -677,6 +677,7 @@
 			{"vpnc_clients", "", NULL, FALSE},
 			{"vpnc_clients_allowed", "", NULL, EVM_REAPPLY_VPNCLI},
 			{"vpnc_ipset_allowed", "", NULL, EVM_REAPPLY_VPNCLI},
+			{"vpnc_ipset_exclude", "", NULL, EVM_REAPPLY_VPNCLI},
 #if defined(APP_WIREGUARD)
 			{"vpns_wg_port", "", NULL, EVM_RESTART_VPNSVR},
 			{"vpns_wg_private", "", NULL, EVM_RESTART_VPNSVR},
