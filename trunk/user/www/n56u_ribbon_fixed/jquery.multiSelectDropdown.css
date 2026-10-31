@@ -1,138 +1,143 @@
 .msd-dropdown {
-  position: relative;
-  display: inline-block;
-  font-family: Arial, sans-serif;
-  font-size: 13px;
+	position: relative;
+	display: inline-block;
+	font-family: Arial, sans-serif;
+	font-size: 13px;
 }
 
 .msd-header {
-  display: flex;
-  align-items: center;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  padding: 0;
-  background: #fff;
-  cursor: default;
-  box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	border-radius: 3px;
+	padding: 0;
+	cursor: default;
+	box-sizing: border-box;
 }
 
 .msd-header .msd-input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 13px;
-  padding: 0;
-  margin: 4px;
-  background: transparent;
-  cursor: text;
-  line-height: normal;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  box-sizing: border-box;
-  box-shadow: none;
+	flex: 1;
+	border: none;
+	outline: none;
+	font-size: 13px;
+	padding: 0;
+	margin: 4px;
+	cursor: text;
+	line-height: normal;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	box-sizing: border-box;
+	box-shadow: none;
+	background: transparent;
 }
 
 .msd-header .msd-input::placeholder {
-  color: #555;
+	color: currentColor;
 }
 
 .msd-header .msd-input[readonly] {
-  caret-color: transparent;
-  cursor: default;
+	caret-color: transparent;
+	cursor: default;
 }
 
 .msd-chevron {
-  width: 16px;
-  height: 100%;
-  fill: #666;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	width: 16px;
+	height: 100%;
+	fill: #666;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .msd-content {
-  position: absolute;
-  top: calc(100% + 1px);
-  left: 0;
-  right: 0;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  z-index: 999;
-  display: none;
-  max-height: 250px;
-  overflow-y: auto;
+	position: absolute;
+	top: calc(100% + 1px);
+	left: 0;
+	right: 0;
+	background: inherit;
+	border-color: inherit;
+	border-width: inherit;
+	border-style: inherit;
+	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+	z-index: 999;
+	display: none;
+	max-height: 310px;
+	overflow-y: auto;
+	scroll-snap-type: y mandatory;
 }
 
 .msd-dropdown.msd-show .msd-content {
-  display: block;
+	display: block;
 }
 
 .msd-item {
-  display: flex;
-  align-items: center;
-  gap: 0px;
-  padding: 0;
+	display: flex;
+	align-items: center;
+	gap: 0px;
+	padding: 0;
+	color: inherit;
+	scroll-snap-align: start;
 }
 
 .msd-item:hover {
-  background: #d9edf7;
+	background: SelectedItem;
+	color: SelectedItemText;
 }
 
 .msd-label {
-  display: flex;
-  align-items: center;
-  flex: 1;
-  gap: 6px;
-  cursor: default;
-  margin: 0;
-  padding: 6px 8px 6px 8px;
+	display: flex;
+	align-items: center;
+	flex: 1;
+	gap: 6px;
+	cursor: default;
+	margin: 0;
+	padding: 6px 8px 6px 8px;
+	color: inherit;
 }
 
 .msd-title {
-  margin-left: auto;
-  font-stretch: condensed;
-  font-size: 12px;
-  color: #888888;
+	margin-left: auto;
+	font-stretch: condensed;
 }
 
 .msd-label input[type="checkbox"] {
-  cursor: pointer;
+	cursor: pointer;
 }
 
 .msd-delete {
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  padding: 0px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	padding: 0px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .msd-delete svg {
-  margin-left: 8px;
-  margin: 8px 0px 8px 8px;
-  width: 10px;
-  height: 10px;
-  stroke: #888;
-  stroke-width: 1.5;
+	margin: 8px 0px 8px 8px;
+	width: 10px;
+	height: 10px;
+	stroke: red;
+	stroke-width: 1.5;
 }
 
 .msd-delete:hover svg {
-  stroke: #c00;
+	stroke: red;
 }
 
 .msd-add-suggestion {
-  padding: 6px 8px;
-  background: #f0f0f0;
-  cursor: pointer;
-  font-style: italic;
-  border-bottom: 1px dashed #ccc;
+	padding: 6px 8px;
+	background: rgba(0, 0, 0, 0.1);
+	cursor: pointer;
+	font-style: italic;
 }
 
 .msd-add-suggestion:hover {
-  background: #e3e3e3;
+	background: SelectedItem;
+	color: SelectedItemText;
+}
+
+.msd-item:has(.msd-label:hover) .msd-delete svg {
+	stroke: SelectedItemText;
 }

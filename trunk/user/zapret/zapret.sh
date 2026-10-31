@@ -146,8 +146,8 @@ ipset_create_exclude()
         done
     else
         filter_ipv4 < "${CONF_DIR}/ipset-exclude.list" \
-            | sed -E 's#^(.*)$#add nozapret \1#' \
-            | ipset restore
+            | sed -E 's#^(.*)$#add nozapret \1 -exist#' \
+            | ipset -! restore
 
         for i in \
             127.0.0.0/8 169.254.0.0/16 100.64.0.0/10 \
@@ -163,9 +163,7 @@ ipset_create_exclude()
 
 ipset_exclude()
 {
-    [ -n "$IPSET" ] || return
-
-    echo "-m set ! --match-set nozapret$2 $1"
+    echo "-m set --match-set nozapret$2 $1"
 }
 
 get_ipset_name_hash()
@@ -289,7 +287,7 @@ mangle_chain_rules()
     fi
 
     # create iptables rules for ipset mark: mark = ipset name hash
-    [ -z "$1" ] && for i in $IPSET_FWMARK; do
+    [ -z "$1" ] && [ -n "$IPSET" ] && for i in $IPSET_FWMARK; do
         if hash=$(get_ipset_name_hash "$i"); then
             ipset -q create $i nethash family inet \
             && log "'$i' created successfully"
@@ -298,15 +296,20 @@ mangle_chain_rules()
         fi
     done
 
+    if [ -n "$IPSET" ]; then
+        echo "-I zapret_pre $(ipset_exclude src $1) -j RETURN"
+        echo "-I zapret_post $(ipset_exclude dst $1) -j RETURN"
+    fi
+
     for i in $ISP_IF; do
-        echo "-A zapret_pre -i $i $(ipset_exclude src $1) $jnfq"
+        echo "-A zapret_pre -i $i $jnfq"
 
         for port in $(get_port_list "$TCP_PORTS"); do
-            echo "-A zapret_post -o $i -p tcp -m multiport --dports $port $filter $(ipset_exclude dst $1) $jnfq"
+            echo "-A zapret_post -o $i -p tcp -m multiport --dports $port $filter $jnfq"
         done
 
         for port in $(get_port_list "$UDP_PORTS"); do
-            echo "-A zapret_post -o $i -p udp -m multiport --dports $port $filter $(ipset_exclude dst $1) $jnfq"
+            echo "-A zapret_post -o $i -p udp -m multiport --dports $port $filter $jnfq"
         done
     done
 }

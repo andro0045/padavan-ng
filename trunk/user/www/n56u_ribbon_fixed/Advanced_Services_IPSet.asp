@@ -112,10 +112,10 @@ function ipset_del(index){
 }
 
 function ipset_list_update() {
-	var code = `<table width="100%" style="margin: 0; border: 1px solid #E3E3E3">`;
+	var code = `<table width="100%" style="margin: 0">`;
 
 	IPSet_List.forEach((item, index, array) => {
-			code += `<tr ${(index % 2 === 0 ? 'style="background-color: #EEEEEE"' : '')}>`;
+			code += `<tr>`;
 			code += `<td>${item.name}</td>`;
 
 			if (item.url.startsWith("http://")
@@ -125,12 +125,14 @@ function ipset_list_update() {
 			else
 				code += `<td class="compact-link" title="${item.url}">${item.url}</td>`;
 
-			code += `<td style="min-width: 28px; padding-left: 0px"><div title="<#CTL_del#>" class="icon icon-remove" onclick="ipset_del(${index})" style="cursor:pointer; margin-left: 10px"></div></td>`;
+			code += `<td style="min-width: 40px; padding-left: 0px"><div title="<#CTL_del#>" class="icon icon-remove" onclick="ipset_del(${index})" style="cursor:pointer; margin-left: 10px"></div></td>`;
 			code += `</tr>`;
 	});
 
 	if (IPSet_List.length == 0)
-		code += `<tr><td colspan="3" class="alert" style="text-align: center; padding: 0; border-color: transparent"><div class="alert alert-info" style="margin: 0"><#Service_IPSet_Help#></div></td></tr>`;
+		code += `<tr><td colspan="3" style="text-align: center; padding-top: 0; padding-bottom: 0; border-color: transparent"><div class="alert alert-info" style="margin: 0"><#Service_IPSet_Help#></div></td></tr>`;
+	else
+		code += `<tr><td colspan="3" style="padding: 0"></td></tr>`;
 
 	code += `</table>`;
 	$("IPSet_List_Block").innerHTML = code;
@@ -217,6 +219,8 @@ function checkEnter(e){
     }
     code {
         color: inherit;
+        background: inherit;
+        border: 1px solid;
         white-space: nowrap;
     }
     .compact-link {
@@ -226,6 +230,9 @@ function checkEnter(e){
         overflow: hidden;
         text-overflow: ellipsis;
         vertical-align: middle;
+    }
+    input {
+        text-overflow: ellipsis;
     }
 </style>
 </head>
@@ -333,18 +340,18 @@ function checkEnter(e){
                                         <tr>
                                             <th width="50%"><#Service_IPSet_Name#>:</a></th>
                                             <td>
-                                                <input onkeypress="if (checkEnter(event)) ipset_add();" style="width: 275px" type="text" maxlength="32" id="ipset_name" class="input" oninput="updateTooltip(this)" onmouseenter="updateTooltip(this)"/>
+                                                <input onkeypress="if (checkEnter(event)) ipset_add();" style="width: 270px" type="text" maxlength="32" id="ipset_name" class="input" oninput="updateTooltip(this)" onmouseenter="updateTooltip(this)"/>
                                             </td>
                                         </tr>
                                         <tr>
                                             <th width="50%"><#Service_IPSet_URL#>:</a></th>
                                             <td>
-                                                <input onkeypress="if (checkEnter(event)) ipset_add();" style="width: 275px" type="text" maxlength="4096" id="ipset_url" class="input" oninput="updateTooltip(this)" onmouseenter="updateTooltip(this)"/>
+                                                <input onkeypress="if (checkEnter(event)) ipset_add();" style="width: 270px" type="text" maxlength="4096" id="ipset_url" class="input" oninput="updateTooltip(this)" onmouseenter="updateTooltip(this)"/>
                                                 <button type="button" class="btn" style="outline:0" id="ipset_button_add" title="<#CTL_add#>" onclick="ipset_add();"><i class="icon icon-plus"></i></button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2" style="padding-top: 8px; padding-bottom: 18px; border: none">
+                                            <td colspan="2" style="padding: 0 0 18px 0; border: none">
                                                 <div id="IPSet_List_Block"></div>
                                             </td>
                                         </tr>
