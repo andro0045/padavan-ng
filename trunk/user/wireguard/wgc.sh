@@ -34,18 +34,23 @@ REMOTE_NETWORK_LIST="/etc/storage/vpnc_remote_network.list"
 EXCLUDE_NETWORK_LIST="/etc/storage/vpnc_exclude_network.list"
 
 NV_CLIENTS_LIST="$(nvram get vpnc_clients_allowed | tr -s ' ,' '\n')"
-NV_IPSET_LIST="$(nvram get vpnc_ipset_allowed | tr -s ' ,' '\n')"
+NV_REMOTE_IPSET_LIST="$(nvram get vpnc_ipset_allowed | tr -s ' ,' '\n')"
+NV_EXCLUDE_IPSET_LIST="$(nvram get vpnc_ipset_exclude | tr -s ' ,' '\n')"
 
 TABLE=51
 FWMARK=51820
 PREF_WG=5182
 PREF_MAIN=5181
 
-# nethash remote networks
+# remote networks
 VPN_REMOTE_IPSET="vpn.remote"
-# nethash excluded remote networks
+VPN_REMOTE_IPSET_LIST="vpn.remote.list"
+
+# excluded remote networks
 VPN_EXCLUDE_IPSET="vpn.exclude"
-# nethash allowed LAN clients
+VPN_EXCLUDE_IPSET_LIST="vpn.exclude.list"
+
+# allowed LAN clients
 VPN_CLIENTS_IPSET="vpn.clients"
 
 ###
@@ -195,7 +200,7 @@ prevent_access_loss()
     local i ep
 
     for i in \
-        $(nvram get lan_ipaddr) \
+        $(nvram get lan_ipaddr_t) \
         $(nvram get wan_ipaddr) \
         $(nvram get wan0_ipaddr)
     do
@@ -224,7 +229,7 @@ add_route()
 {
     # ¯\_(ツ)_/¯
     sync && sysctl -q vm.drop_caches=3
-    usleep 100000
+    sleep 1
 
     add_default_route
 
@@ -455,7 +460,8 @@ call_post_script()
     PEER_ENDPOINT="$PEER_ENDPOINT" \
     PEER_ALLOWEDIPS="$PEER_ALLOWEDIPS" \
     NV_CLIENTS_LIST="$NV_CLIENTS_LIST" \
-    NV_IPSET_LIST="$NV_IPSET_LIST" \
+    NV_REMOTE_IPSET_LIST="$NV_REMOTE_IPSET_LIST" \
+    NV_EXCLUDE_IPSET_LIST="$NV_EXCLUDE_IPSET_LIST" \
     TABLE="$TABLE" \
     FWMARK="$FWMARK" \
     PREF_WG="$PREF_WG" \
@@ -484,12 +490,12 @@ ipset_load()
     if [ "$mode" = "list" ]; then
         [ -s "$list" ] || return
         filter_ipv4 < $list \
-            | sed -E 's#^(.*)$#add '"$name"' \1#' \
+            | sed -E 's#^(.*)$#add '"$name"' \1 -exist#' \
             | ipset -! restore
     else
         [ -n "$list" ] || return
         printf '%s\n' "$list" | filter_ipv4 \
-            | sed -E 's#^(.*)$#add '"$name"' \1#' \
+            | sed -E 's#^(.*)$#add '"$name"' \1 -exist#' \
             | ipset -! restore
     fi
 
@@ -507,19 +513,37 @@ ipset_create()
     ipset_load "nv" "$VPN_CLIENTS_IPSET" "$NV_CLIENTS_LIST"
 
     local name
-    for name in $NV_IPSET_LIST; do
-        ipset -q create $name nethash
+    for name in $NV_REMOTE_IPSET_LIST; do
+        ipset -q create $name nethash -exist
+    done
+
+    for name in $NV_EXCLUDE_IPSET_LIST; do
+        ipset -q create $name nethash -exist
     done
 
     for name in $(bogon_networks); do
-        ipset -q add $VPN_EXCLUDE_IPSET $name
+        ipset -q add $VPN_EXCLUDE_IPSET $name -exist
     done
 
     echo "$PEER_ALLOWEDIPS" | grep -qv "/0" \
     && log "adding additional AllowedIPs to ipset '$VPN_REMOTE_IPSET'"
 
     for name in $PEER_ALLOWEDIPS; do
-        ipset -q add $VPN_REMOTE_IPSET "$name"
+        ipset -q add $VPN_REMOTE_IPSET "$name" -exist
+    done
+
+    # list of allowed ipsets
+    ipset -q create $VPN_REMOTE_IPSET_LIST list:set
+    ipset flush $VPN_REMOTE_IPSET_LIST
+    for name in $VPN_REMOTE_IPSET $NV_REMOTE_IPSET_LIST; do
+        ipset -q add "$VPN_REMOTE_IPSET_LIST" "$name" -exist
+    done
+
+    # list of excluded ipsets
+    ipset -q create $VPN_EXCLUDE_IPSET_LIST list:set
+    ipset flush $VPN_EXCLUDE_IPSET_LIST
+    for name in $VPN_EXCLUDE_IPSET $NV_EXCLUDE_IPSET_LIST; do
+        ipset -q add "$VPN_EXCLUDE_IPSET_LIST" "$name" -exist
     done
 }
 
@@ -530,7 +554,7 @@ bogon_networks()
         192.0.0.0/24 192.0.2.0/24 198.51.100.0/24
         203.0.113.0/24 224.0.0.0/4 240.0.0.0/4
         $(nvram get vpns_vnet)/24
-        $(nvram get lan_ipaddr)/24"
+        $(nvram get lan_ipaddr_t)/24"
 }
 
 ipt_set_rules()
@@ -542,14 +566,12 @@ ipt_set_rules()
             echo "-A vpnc_wireguard -m set ! --match-set $VPN_CLIENTS_IPSET src -j RETURN"
         fi
 
-        echo "-A vpnc_wireguard -m set --match-set $VPN_EXCLUDE_IPSET dst -j RETURN"
+        echo "-A vpnc_wireguard -m set --match-set $VPN_EXCLUDE_IPSET_LIST dst -j RETURN"
 
         if [ -n "$DEFAULT" ]; then
             echo "-A vpnc_wireguard -j vpnc_wireguard_mark"
         else
-            for i in "$VPN_REMOTE_IPSET" $NV_IPSET_LIST; do
-                [ -n "$i" ] && echo "-A vpnc_wireguard -m set --match-set $i dst -j vpnc_wireguard_mark"
-            done
+            echo "-A vpnc_wireguard -m set --match-set $VPN_REMOTE_IPSET_LIST dst -j vpnc_wireguard_mark"
         fi
     else
         for i in $(bogon_networks) $(filter_ipv4 < "$EXCLUDE_NETWORK_LIST"); do
@@ -586,7 +608,7 @@ stop_fw()
     ipt_remove_rule(){ while iptables -t $1 -C $2 2>/dev/null; do iptables -t $1 -D $2; done }
     ipt_remove_chain(){ iptables -t $1 -F $2 2>/dev/null && iptables -t $1 -X $2 2>/dev/null; }
 
-    ipt_remove_rule "mangle" "PREROUTING -s $(nvram get lan_ipaddr)/24 -j vpnc_wireguard"
+    ipt_remove_rule "mangle" "PREROUTING -s $(nvram get lan_ipaddr_t)/24 -j vpnc_wireguard"
     ipt_remove_rule "mangle" "PREROUTING -s $(nvram get vpns_vnet)/24 -j vpnc_wireguard"
 
     ipt_remove_chain "mangle" "vpnc_wireguard"
@@ -604,15 +626,14 @@ start_fw()
 :vpnc_wireguard - [0:0]
 :vpnc_wireguard_remote - [0:0]
 :vpnc_wireguard_mark - [0:0]
--A PREROUTING -s $(nvram get lan_ipaddr)/24 -j vpnc_wireguard
+-A PREROUTING -s $(nvram get lan_ipaddr_t)/24 -j vpnc_wireguard
 -A PREROUTING -s $(nvram get vpns_vnet)/24 -j vpnc_wireguard
 -A vpnc_wireguard -p udp --dport 53 -j RETURN
 -A vpnc_wireguard -p tcp --dport 53 -j RETURN
 -A vpnc_wireguard -p udp --dport 123 -j RETURN
 $(ipt_set_rules)
 -A vpnc_wireguard_mark -j CONNMARK --restore-mark
--A vpnc_wireguard_mark -m mark --mark $FWMARK -j RETURN
--A vpnc_wireguard_mark -m conntrack --ctstate NEW -j MARK --set-mark $FWMARK
+-A vpnc_wireguard_mark -m mark --mark 0 -m conntrack --ctstate NEW -j MARK --set-mark $FWMARK
 -A vpnc_wireguard_mark -m mark --mark $FWMARK -j CONNMARK --save-mark
 COMMIT
 EOF
