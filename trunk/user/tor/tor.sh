@@ -201,12 +201,12 @@ fill_ipset()
     if [ "$mode" = "list" ]; then
         [ -s "$list" ] || return
         filter_ipv4 < $list \
-            | sed -E 's#^(.*)$#add '"$name"' \1#' \
+            | sed -E 's#^(.*)$#add '"$name"' \1 -exist#' \
             | ipset -! restore
     else
         [ -n "$list" ] || return
         printf '%s\n' "$list" | filter_ipv4 \
-            | sed -E 's#^(.*)$#add '"$name"' \1#' \
+            | sed -E 's#^(.*)$#add '"$name"' \1 -exist#' \
             | ipset -! restore
     fi
 
