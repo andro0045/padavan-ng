@@ -801,6 +801,7 @@ struct nvram_pair router_defaults[] = {
 	{ "vpnc_clients_allowed", "" },
 #if defined(SUPPORT_IPSET)
 	{ "vpnc_ipset_allowed", "unblock" },
+	{ "vpnc_ipset_exclude", "" },
 	{ "ipset_enable", "0" },
 	{ "ipset_period", "24" },
 #endif
