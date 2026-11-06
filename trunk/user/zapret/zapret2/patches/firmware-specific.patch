@@ -1,6 +1,9 @@
 --- zapret2-1.0.7.orig/ip2net/Makefile
 +++ zapret2-1.0.7/ip2net/Makefile
-@@ -4,7 +4,6 @@
+@@ -1,10 +1,8 @@
+ CC ?= cc
+ OPTIMIZE ?= -Os
+-CFLAGS_PIC = -fPIC
  CFLAGS += -std=gnu99 $(OPTIMIZE)
  CFLAGS_BSD = -Wno-address-of-packed-member
  CFLAGS_WIN = -static
@@ -8,7 +11,7 @@
  
  LIBS = 
  LIBS_WIN = -lws2_32
-@@ -13,7 +12,7 @@
+@@ -13,7 +11,7 @@
  all: ip2net
  
  ip2net: $(SRC_FILES)
