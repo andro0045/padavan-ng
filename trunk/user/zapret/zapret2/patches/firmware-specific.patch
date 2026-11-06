@@ -1,26 +1,20 @@
---- zapret2-1.0.7/ip2net/Makefile
-+++ zapret2-1.0.7/ip2net/Makefile
-@@ -1,10 +1,8 @@
+--- zapret2-1.0.6.orig/ip2net/Makefile
++++ zapret2-1.0.6/ip2net/Makefile
+@@ -1,11 +1,8 @@
  CC ?= cc
  OPTIMIZE ?= -Os
 -CFLAGS_PIC = -fPIC
- CFLAGS += -std=gnu99 $(OPTIMIZE)
+-CFLAGS += -std=gnu99 $(OPTIMIZE) -flto=auto $(CFLAGS_PIC)
++CFLAGS += -std=gnu99 $(OPTIMIZE)
  CFLAGS_BSD = -Wno-address-of-packed-member
  CFLAGS_WIN = -static
 -LDFLAGS_PIE = -pie
+-LDFLAGS +=  $(LDFLAGS_PIE)
  
  LIBS = 
  LIBS_WIN = -lws2_32
-@@ -13,7 +11,7 @@
- all: ip2net
- 
- ip2net: $(SRC_FILES)
--	$(CC) -s $(CFLAGS) $(CFLAGS_PIC) -o ip2net $(SRC_FILES) $(LIBS) $(LDFLAGS) $(LDFLAGS_PIE)
-+	$(CC) -s $(CFLAGS) -o ip2net $(SRC_FILES) $(LIBS) $(LDFLAGS)
- 
- systemd: ip2net
---- zapret2-1.0.7/nfq2/Makefile
-+++ zapret2-1.0.7/nfq2/Makefile
+--- zapret2-1.0.6.orig/nfq2/Makefile
++++ zapret2-1.0.6/nfq2/Makefile
 @@ -1,18 +1,14 @@
  CC ?= cc
  PKG_CONFIG ?= pkg-config
@@ -42,8 +36,8 @@
  LDFLAGS_ANDROID = -llog
  LDFLAGS_CYGWIN = -Wl,--build-id=none
  STRIPP=-s
---- zapret2-1.0.7/nfq2/sec.c
-+++ zapret2-1.0.7/nfq2/sec.c
+--- zapret2-1.0.6.orig/nfq2/sec.c
++++ zapret2-1.0.6/nfq2/sec.c
 @@ -15,7 +15,7 @@
  #include <sys/prctl.h>
  #include <sys/syscall.h>
@@ -95,8 +89,8 @@
  bool checkpcap(uint64_t caps)
  {
  	if (!caps) return true; // no special caps reqd
---- zapret2-1.0.7/nfq2/sec.h
-+++ zapret2-1.0.7/nfq2/sec.h
+--- zapret2-1.0.6.orig/nfq2/sec.h
++++ zapret2-1.0.6/nfq2/sec.h
 @@ -2,11 +2,12 @@
  
  #include <sys/types.h>
