@@ -1,6 +1,6 @@
 --- zapret2-1.0.8.orig/ip2net/Makefile
 +++ zapret2-1.0.8/ip2net/Makefile
-@@ -1,10 +1,10 @@
+@@ -1,10 +1,8 @@
  CC ?= cc
  OPTIMIZE ?= -Os
 -CFLAGS_PIC = -fPIC
@@ -11,7 +11,7 @@
  
  LIBS = 
  LIBS_WIN = -lws2_32
-@@ -13,18 +13,18 @@ SRC_FILES = ip2net.c qsort.c
+@@ -11,18 +9,18 @@ SRC_FILES = ip2net.c qsort.c
  all: ip2net
  
  ip2net: $(SRC_FILES)
