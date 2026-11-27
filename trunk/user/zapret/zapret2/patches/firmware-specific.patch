@@ -1,5 +1,5 @@
---- zapret2-1.0.6.orig/ip2net/Makefile
-+++ zapret2-1.0.6/ip2net/Makefile
+--- zapret2-1.0.8.orig/ip2net/Makefile
++++ zapret2-1.0.8/ip2net/Makefile
 @ -1,10 +1,8 @@
  CC ?= cc
  OPTIMIZE ?= -Os
@@ -19,8 +19,8 @@
 +	$(CC) -s $(CFLAGS) -o ip2net $(SRC_FILES) $(LIBS) $(LDFLAGS)
  
  systemd: ip2net
---- zapret2-1.0.6.orig/nfq2/Makefile
-+++ zapret2-1.0.6/nfq2/Makefile
+--- zapret2-1.0.8.orig/nfq2/Makefile
++++ zapret2-1.0.8/nfq2/Makefile
 @@ -1,18 +1,14 @@
  CC ?= cc
  PKG_CONFIG ?= pkg-config
@@ -42,8 +42,8 @@
  LDFLAGS_ANDROID = -llog
  LDFLAGS_CYGWIN = -Wl,--build-id=none
  STRIPP=-s
---- zapret2-1.0.6.orig/nfq2/sec.c
-+++ zapret2-1.0.6/nfq2/sec.c
+--- zapret2-1.0.8.orig/nfq2/sec.c
++++ zapret2-1.0.8/nfq2/sec.c
 @@ -15,7 +15,7 @@
  #include <sys/prctl.h>
  #include <sys/syscall.h>
